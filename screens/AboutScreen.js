@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '../styles/theme';
 import AppButton from '../components/AppButton';
-import Card from '../components/Card';
+import Card from '../components/Cards'; // Corrected import path
 
 const AboutScreen = ({ navigate }) => {
   const { colors, fonts } = useTheme();

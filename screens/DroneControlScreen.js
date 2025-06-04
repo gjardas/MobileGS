@@ -1,138 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { useTheme } from '../styles/theme';
-import AppButton from '../components/AppButton';
-import Card from '../components/Card';
-import CustomAlert from '../components/CustomAlert';
-import api from '../services/api'; // Importa o serviço de API
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, Button, ScrollView, Alert } from 'react-native'; // Added Alert
+import { useRoute } from '@react-navigation/native';
+import api from '../services/api'; // Adjust path if necessary
+import { useAuth } from '../context/AuthContext'; // Import useAuth
+import { useTheme } from '../styles/theme'; // Adjust path if necessary
 
-const DroneControlScreen = ({ navigate }) => {
-  const { colors, fonts } = useTheme();
-  const [drones, setDrones] = useState([]);
-  const [loading, setLoading] = useState(true);
+const DroneControlScreen = () => {
+  const route = useRoute();
+  const { simulationId, disasterType } = route.params || {};
+
+  const [droneResponse, setDroneResponse] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('info');
 
-  useEffect(() => {
-    fetchDrones();
-  }, []);
+  const { colors, fonts } = useTheme();
+  const { logout } = useAuth(); // Get logout function
 
-  const fetchDrones = async () => {
-    setLoading(true);
+  const fetchDroneDispatchInfo = useCallback(async () => {
+    if (!simulationId) {
+      setError('ID da Simulação não fornecido.');
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
     setError(null);
     try {
-      const data = await api.getDrones();
-      setDrones(data);
+      const response = await api.getDroneDispatchForSimulation(simulationId);
+      setDroneResponse(response);
     } catch (err) {
-      setError(err.message);
-      setAlertMessage(err.message);
-      setAlertType('danger');
-      setAlertVisible(true);
+      console.error(`Failed to fetch drone dispatch for simulation ${simulationId}:`, err.message);
+      if (err.message === 'UNAUTHORIZED_OR_EXPIRED_TOKEN') {
+        Alert.alert("Sessão Expirada", "Sua sessão expirou. Por favor, faça login novamente.", [
+          { text: "OK", onPress: async () => await logout() }
+        ]);
+        setError("Sessão expirada. Faça login para continuar.");
+      } else if (err.message && (err.message.includes('400') || err.message.includes('IA model is not ready'))) { // Example of specific error handling
+        setError('Não foi possível despachar drones. A predição da IA pode não estar disponível ou a simulação é inválida.');
+      } else {
+        setError(err.message || 'Ocorreu um erro ao buscar informações de despacho dos drones.');
+      }
+      setDroneResponse(null);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  };
+  }, [simulationId, logout]); // Added logout to dependency array
 
-  const activateDrone = (droneId) => {
-    // Simula a ativação do drone
-    setAlertMessage(`Comando de ativação enviado para o drone ${droneId}.`);
-    setAlertType('info');
-    setAlertVisible(true);
-    // Em um cenário real, você faria uma chamada de API para ativar o drone
-    // Ex: api.activateDrone(droneId);
-  };
+  useEffect(() => {
+    fetchDroneDispatchInfo();
+  }, [fetchDroneDispatchInfo]);
 
-  if (loading) {
+  const styles = StyleSheet.create({
+    scrollViewContainer: {
+      flexGrow: 1,
+      backgroundColor: colors.background,
+    },
+    container: {
+      flex: 1,
+      padding: 20,
+    },
+    centered: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      backgroundColor: colors.background,
+    },
+    title: {
+      fontSize: fonts.sizes?.h2 || 22,
+      fontWeight: 'bold',
+      color: colors.primary,
+      marginBottom: 10,
+      textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: fonts.sizes?.h3 || 18,
+      color: colors.text,
+      marginBottom: 20,
+      textAlign: 'center',
+    },
+    infoCard: {
+      backgroundColor: colors.card,
+      borderRadius: 8,
+      padding: 15,
+      marginBottom: 15,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    infoText: {
+      fontSize: fonts.sizes?.body || 16,
+      color: colors.text,
+      marginBottom: 8,
+    },
+    infoLabel: {
+      fontWeight: 'bold',
+    },
+    errorText: {
+      color: colors.error,
+      textAlign: 'center',
+      marginBottom: 20,
+      fontSize: fonts.sizes?.body || 16,
+    },
+    buttonContainer: {
+      marginTop: 10,
+    }
+  });
+
+  if (!simulationId) { // Should ideally not happen if navigation is set up correctly
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: colors.background,
-      }}>
-        <div style={{
-          animation: 'spin 1s linear infinite',
-          borderRadius: '50%',
-          height: '64px',
-          width: '64px',
-          borderTop: `4px solid ${colors.primary}`,
-          borderBottom: `4px solid ${colors.primary}`,
-          borderColor: colors.primary,
-        }}></div>
-        <p style={{ marginTop: '16px', fontSize: '18px', color: colors.text }}>Carregando drones...</p>
-      </div>
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>Erro: ID da Simulação não encontrado.</Text>
+      </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={{ color: colors.text, marginTop: 10 }}>Buscando informações de despacho dos drones...</Text>
+      </View>
     );
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: '20px',
-      backgroundColor: colors.background,
-      fontFamily: fonts.regular,
-    }}>
-      <h1 style={{
-        fontSize: '32px',
-        fontWeight: 'bold',
-        marginBottom: '32px',
-        textAlign: 'center',
-        color: colors.primary,
-        fontFamily: fonts.header,
-      }}>
-        Controle de Drones
-      </h1>
+    <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Controle de Drones para Simulação</Text>
+      <Text style={styles.subtitle}>ID da Simulação: {simulationId}</Text>
+      {disasterType && <Text style={styles.subtitle}>Tipo de Desastre: {disasterType}</Text>}
 
-      {drones.length === 0 && !error ? (
-        <Card>
-          <p style={{ fontSize: '18px', color: colors.text }}>Nenhum drone encontrado.</p>
-        </Card>
-      ) : (
-        drones.map((drone) => (
-          <Card key={drone.id} style={{ marginBottom: '16px', padding: '20px' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px', color: colors.primary }}>{drone.name}</h3>
-            <p style={{ fontSize: '16px', marginBottom: '4px', color: colors.text }}>ID: {drone.id}</p>
-            <p style={{ fontSize: '16px', marginBottom: '4px', color: colors.text }}>
-              Status: <span style={{ color: drone.status === 'Ativo' ? colors.success : colors.danger }}>{drone.status}</span>
-            </p>
-            <p style={{ fontSize: '16px', marginBottom: '4px', color: colors.text }}>Localização: {drone.location}</p>
-            <p style={{ fontSize: '16px', marginBottom: '4px', color: colors.text }}>Bateria: {drone.battery}%</p>
-            <p style={{ fontSize: '12px', fontStyle: 'italic', marginTop: '8px', color: colors.text }}>Última Atualização: {new Date(drone.lastUpdate).toLocaleString()}</p>
-            <AppButton
-              title={drone.status === 'Ativo' ? 'Desativar Drone' : 'Ativar Drone'}
-              onClick={() => activateDrone(drone.id)}
-              style={{
-                marginTop: '16px',
-                padding: '8px 16px',
-                fontSize: '16px',
-                backgroundColor: drone.status === 'Ativo' ? colors.danger : colors.primary,
-              }}
-            />
-          </Card>
-        ))
+      {error && (
+        <View style={styles.infoCard}>
+          <Text style={styles.errorText}>{error}</Text>
+          <Button title="Tentar Novamente" onPress={fetchDroneDispatchInfo} color={colors.primary} />
+        </View>
       )}
 
-      <AppButton
-        title="Atualizar Lista"
-        onClick={fetchDrones}
-        style={{ marginTop: '24px' }}
-      />
-      <AppButton
-        title="Voltar para a Home"
-        onClick={() => navigate('Home')}
-      />
-      <CustomAlert
-        visible={alertVisible}
-        message={alertMessage}
-        onClose={() => setAlertVisible(false)}
-        type={alertType}
-      />
-    </div>
+      {droneResponse && !error && (
+        <View style={styles.infoCard}>
+          <Text style={styles.infoText}>
+            <Text style={styles.infoLabel}>Drones Despachados: </Text>
+            {droneResponse.dronesDispatched !== undefined ? droneResponse.dronesDispatched : 'N/A'}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.infoLabel}>Área de Cobertura Estimada: </Text>
+            {droneResponse.estimatedCoverageArea !== undefined ? `${droneResponse.estimatedCoverageArea} Km²` : 'N/A'}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.infoLabel}>Notas da Missão: </Text>
+            {droneResponse.missionNotes || 'Nenhuma nota adicional.'}
+          </Text>
+          <View style={styles.buttonContainer}>
+            <Button title="Atualizar Informações" onPress={fetchDroneDispatchInfo} color={colors.accent || colors.primary} />
+          </View>
+        </View>
+      )}
+
+      {!droneResponse && !error && !isLoading && (
+         <View style={styles.infoCard}>
+            <Text style={styles.infoText}>Nenhuma informação de despacho de drone disponível para esta simulação no momento.</Text>
+         </View>
+      )}
+
+    </ScrollView>
   );
 };
 

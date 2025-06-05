@@ -1,11 +1,30 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Button, ScrollView, Alert } from 'react-native'; // Added Alert
+import { View, Text, StyleSheet, ActivityIndicator, Button, ScrollView, Alert, Pressable } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import api from '../services/api'; // Adjust path if necessary
-import { useAuth } from '../context/AuthContext'; // Import useAuth
-import { useTheme } from '../styles/theme'; // Adjust path if necessary
+import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { useTheme as useCentralTheme } from '../styles/theme';
+
+// Local theme definition
+const localTheme = {
+  colors: {
+    primary: '#2E8B57', secondary: '#4682B4', accent: '#FF6347',
+    background: '#F0F2F5', surface: '#FFFFFF', card: '#FFFFFF',
+    text: '#333333', textSecondary: '#555555', placeholder: '#999999',
+    lightText: '#FFFFFF', error: '#DC3545', success: '#28A745',
+    info: '#17A2B8', warning: '#FFC107', border: '#DDDDDD', disabled: '#CCCCCC',
+  },
+  fonts: { regular: 'System', bold: 'System', header: 'System' },
+  fontSizes: { caption: 12, button: 14, body: 16, input: 16, subheading: 18, title: 20, headline: 24, display1: 32 },
+  spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 16, large: 24, xlarge: 32, xxlarge: 48 },
+  roundness: 8,
+};
+
 
 const DroneControlScreen = () => {
+  const theme = localTheme; // Prioritize localTheme
+  // const { colors, fonts } = useCentralTheme(); // Or merge if central theme is fixed
+
   const route = useRoute();
   const { simulationId, disasterType } = route.params || {};
 
@@ -13,8 +32,7 @@ const DroneControlScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { colors, fonts } = useTheme();
-  const { logout } = useAuth(); // Get logout function
+  const { logout } = useAuth();
 
   const fetchDroneDispatchInfo = useCallback(async () => {
     if (!simulationId) {
@@ -22,7 +40,6 @@ const DroneControlScreen = () => {
       setIsLoading(false);
       return;
     }
-
     setIsLoading(true);
     setError(null);
     try {
@@ -31,11 +48,9 @@ const DroneControlScreen = () => {
     } catch (err) {
       console.error(`Failed to fetch drone dispatch for simulation ${simulationId}:`, err.message);
       if (err.message === 'UNAUTHORIZED_OR_EXPIRED_TOKEN') {
-        Alert.alert("Sessão Expirada", "Sua sessão expirou. Por favor, faça login novamente.", [
-          { text: "OK", onPress: async () => await logout() }
-        ]);
+        Alert.alert("Sessão Expirada", "Sua sessão expirou. Por favor, faça login novamente.", [{ text: "OK", onPress: async () => await logout() }]);
         setError("Sessão expirada. Faça login para continuar.");
-      } else if (err.message && (err.message.includes('400') || err.message.includes('IA model is not ready'))) { // Example of specific error handling
+      } else if (err.message && (err.message.includes('400') || err.message.includes('IA model is not ready') || err.message.includes('Prediction not available'))) {
         setError('Não foi possível despachar drones. A predição da IA pode não estar disponível ou a simulação é inválida.');
       } else {
         setError(err.message || 'Ocorreu um erro ao buscar informações de despacho dos drones.');
@@ -44,69 +59,117 @@ const DroneControlScreen = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [simulationId, logout]); // Added logout to dependency array
+  }, [simulationId, logout]);
 
   useEffect(() => {
     fetchDroneDispatchInfo();
   }, [fetchDroneDispatchInfo]);
 
+  // Reusable ThemedButton for this screen
+  const ThemedButton = ({ title, onPress, type = 'primary', style = {} }) => {
+    let backgroundColor = theme.colors.primary;
+    if (type === 'accent') backgroundColor = theme.colors.accent;
+
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          styles.pressableButton,
+          { backgroundColor, opacity: pressed ? 0.8 : 1 },
+          style,
+        ]}
+        onPress={onPress}
+      >
+        <Text style={styles.pressableButtonText}>{title}</Text>
+      </Pressable>
+    );
+  };
+
   const styles = StyleSheet.create({
     scrollViewContainer: {
       flexGrow: 1,
-      backgroundColor: colors.background,
+      backgroundColor: theme.colors.background,
     },
     container: {
       flex: 1,
-      padding: 20,
+      padding: theme.spacing.medium,
     },
     centered: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 20,
-      backgroundColor: colors.background,
+      padding: theme.spacing.medium,
+      backgroundColor: theme.colors.background,
     },
     title: {
-      fontSize: fonts.sizes?.h2 || 22,
+      fontSize: theme.fontSizes.headline,
+      fontFamily: theme.fonts.header,
       fontWeight: 'bold',
-      color: colors.primary,
-      marginBottom: 10,
+      color: theme.colors.primary,
+      marginBottom: theme.spacing.small,
       textAlign: 'center',
     },
     subtitle: {
-      fontSize: fonts.sizes?.h3 || 18,
-      color: colors.text,
-      marginBottom: 20,
+      fontSize: theme.fontSizes.subheading,
+      fontFamily: theme.fonts.regular,
+      color: theme.colors.textSecondary,
+      marginBottom: theme.spacing.large,
       textAlign: 'center',
     },
     infoCard: {
-      backgroundColor: colors.card,
-      borderRadius: 8,
-      padding: 15,
-      marginBottom: 15,
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.roundness,
+      padding: theme.spacing.medium,
+      marginBottom: theme.spacing.medium,
       borderWidth: 1,
-      borderColor: colors.border,
+      borderColor: theme.colors.border,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 1.5,
     },
     infoText: {
-      fontSize: fonts.sizes?.body || 16,
-      color: colors.text,
-      marginBottom: 8,
+      fontSize: theme.fontSizes.body,
+      fontFamily: theme.fonts.regular,
+      color: theme.colors.text,
+      marginBottom: theme.spacing.small,
+      lineHeight: theme.fontSizes.body * 1.4,
     },
     infoLabel: {
       fontWeight: 'bold',
+      fontFamily: theme.fonts.bold,
+      color: theme.colors.text, // Or theme.colors.primary for more emphasis
     },
     errorText: {
-      color: colors.error,
+      color: theme.colors.error,
       textAlign: 'center',
-      marginBottom: 20,
-      fontSize: fonts.sizes?.body || 16,
+      marginBottom: theme.spacing.medium,
+      fontSize: theme.fontSizes.body,
+      fontFamily: theme.fonts.regular,
     },
-    buttonContainer: {
-      marginTop: 10,
+    pressableButton: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: theme.spacing.small, // Slightly smaller for these actions
+      paddingHorizontal: theme.spacing.medium,
+      borderRadius: theme.roundness,
+      marginVertical: theme.spacing.small,
+      elevation: 1, // Subtle shadow
+    },
+    pressableButtonText: {
+      fontSize: theme.fontSizes.button,
+      fontFamily: theme.fonts.bold,
+      color: theme.colors.lightText,
+      fontWeight: 'bold',
+    },
+    loadingText: {
+        color: theme.colors.text,
+        marginTop: theme.spacing.small,
+        fontSize: theme.fontSizes.body,
     }
   });
 
-  if (!simulationId) { // Should ideally not happen if navigation is set up correctly
+  if (!simulationId) {
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>Erro: ID da Simulação não encontrado.</Text>
@@ -117,22 +180,22 @@ const DroneControlScreen = () => {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ color: colors.text, marginTop: 10 }}>Buscando informações de despacho dos drones...</Text>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <Text style={styles.loadingText}>Buscando informações de despacho...</Text>
       </View>
     );
   }
 
   return (
     <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Controle de Drones para Simulação</Text>
-      <Text style={styles.subtitle}>ID da Simulação: {simulationId}</Text>
-      {disasterType && <Text style={styles.subtitle}>Tipo de Desastre: {disasterType}</Text>}
+      <Text style={styles.title}>Despacho de Drones</Text>
+      <Text style={styles.subtitle}>Simulação ID: {simulationId}</Text>
+      {disasterType && <Text style={[styles.subtitle, {fontSize: theme.fontSizes.body, marginBottom: theme.spacing.medium}]}>Tipo de Desastre: {disasterType}</Text>}
 
       {error && (
         <View style={styles.infoCard}>
           <Text style={styles.errorText}>{error}</Text>
-          <Button title="Tentar Novamente" onPress={fetchDroneDispatchInfo} color={colors.primary} />
+          <ThemedButton title="Tentar Novamente" onPress={fetchDroneDispatchInfo} type="primary" />
         </View>
       )}
 
@@ -150,9 +213,7 @@ const DroneControlScreen = () => {
             <Text style={styles.infoLabel}>Notas da Missão: </Text>
             {droneResponse.missionNotes || 'Nenhuma nota adicional.'}
           </Text>
-          <View style={styles.buttonContainer}>
-            <Button title="Atualizar Informações" onPress={fetchDroneDispatchInfo} color={colors.accent || colors.primary} />
-          </View>
+          <ThemedButton title="Atualizar Informações" onPress={fetchDroneDispatchInfo} type="accent" />
         </View>
       )}
 
@@ -161,7 +222,6 @@ const DroneControlScreen = () => {
             <Text style={styles.infoText}>Nenhuma informação de despacho de drone disponível para esta simulação no momento.</Text>
          </View>
       )}
-
     </ScrollView>
   );
 };

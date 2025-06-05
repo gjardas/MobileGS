@@ -7,6 +7,8 @@ const HomeScreen = ({ navigation }) => { // navigation prop from React Navigatio
   const { logout, userData } = useAuth();
   const { colors, fonts } = useTheme(); // Assuming useTheme provides React Native compatible styles
 
+  console.log('HomeScreen userData:', userData); // DEBUG
+
   const handleLogout = async () => {
     try {
       await logout();

@@ -77,37 +77,12 @@ function AppRootNavigator() {
 const App = () => {
   return (
     <AuthProvider>
-      <ThemeProvider>
-        {/* Global styles from the original App.js - applied via ThemeProvider or direct style tag */}
-        <style>
-          {`
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-            body { /* Note: 'body' styling might not directly apply in React Native environment as it does in web */
-              margin: 0;
-              font-family: 'Inter', sans-serif;
-              -webkit-font-smoothing: antialiased;
-              -moz-osx-font-smoothing: grayscale;
-            }
-            .animate-fade-in {
-              animation: fadeIn 0.3s ease-out forwards;
-            }
-            .animate-scale-in {
-              animation: scaleIn 0.3s ease-out forwards;
-            }
-            @keyframes fadeIn {
-              from { opacity: 0; }
-              to { opacity: 1; }
-            }
-            @keyframes scaleIn {
-              from { transform: scale(0.95); opacity: 0; }
-              to { transform: scale(1); opacity: 1; }
-            }
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}
-        </style>
+      <ThemeProvider> {/* ThemeProvider should ideally inject styles in a RN-compatible way */}
+        {/* The <style> tag with global CSS has been removed.
+            Global font imports like Inter should be handled via Expo Font or custom font loading.
+            CSS animations would need to be replaced with React Native's Animated API or libraries like Lottie/Reanimated.
+            Basic body styles (margin, font-family) are typically handled by default text components or global styles set on root views.
+         */}
         <AppRootNavigator />
       </ThemeProvider>
     </AuthProvider>

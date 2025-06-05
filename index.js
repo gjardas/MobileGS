@@ -1,15 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { registerRootComponent } from 'expo';
 import App from './App';
-// import './index.css'; // Opcional, se você tiver outros estilos globais aqui
-// import reportWebVitals from './reportWebVitals'; // Opcional
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-// Se você usa reportWebVitals para medir performance
-// reportWebVitals();
+// registerRootComponent chama AppRegistry.registerComponent('main', () => App);
+// Também garante que, seja carregando o app no Expo Go ou em um build nativo,
+// o ambiente seja configurado apropriadamente.
+registerRootComponent(App);

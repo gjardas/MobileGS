@@ -3,7 +3,7 @@
 // Ele encapsula toda a lógica de chamadas de rede para os diversos endpoints da API.
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8081'; // Updated port to 8081
 
 const api = {
   // --- Funções de Autenticação ---
@@ -35,10 +35,19 @@ const api = {
           email: data.email,
           roles: data.roles
         };
-        await AsyncStorage.setItem('userData', JSON.stringify(userDataToStore));
-        return data;
+        // Garantir que userDataToStore tenha os campos corretos antes de salvar
+        if (userDataToStore.username && userDataToStore.email) {
+           await AsyncStorage.setItem('userData', JSON.stringify(userDataToStore));
+        } else {
+          // Logar um aviso se campos essenciais estiverem faltando na resposta da API
+          console.warn('Campos username ou email faltando na resposta da API de login:', data);
+          // Consider not saving userData if essential fields are missing, or saving it partially
+          // For now, we'll still save what we have, but the warning is important.
+          await AsyncStorage.setItem('userData', JSON.stringify(userDataToStore));
+        }
+        return data; // Retorna AuthResponseDto completo
       } else {
-        throw new Error('Token não recebido do servidor.');
+        throw new Error(data?.message || 'Token não recebido do servidor.');
       }
     } catch (error) {
       console.error('Erro no login:', error);

@@ -19,21 +19,25 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await api.login(username, password); // api.login should handle AsyncStorage internally
+      console.log('API Login Response:', response); // DEBUG
       if (response && response.token) {
         setUserToken(response.token);
-        // Assuming api.login returns user details besides token, e.g., { token, userId, username, email, roles }
-        // And these details are also stored in AsyncStorage by api.login or here.
-        // For now, let's assume api.login returns the full user data needed by the app
-        // and it has already stored it. We just need to set it in context.
-        const storedUserDataString = await AsyncStorage.getItem('userData');
-        if (storedUserDataString) {
-            setUserData(JSON.parse(storedUserDataString));
-        } else {
-            // Fallback if api.login doesn't store it or if we need to construct it
-             setUserData({ userId: response.userId, username: response.username, email: response.email, roles: response.roles });
-        }
+
+        const userDataPayload = {
+          userId: response.userId,
+          username: response.username,
+          email: response.email,
+          roles: response.roles
+        };
+        console.log('Setting userData:', userDataPayload); // DEBUG
+        setUserData(userDataPayload);
+
+        // Note: api.login in services/api.js already saves token and constructed userData to AsyncStorage.
+        // So, we don't necessarily need to read it back from AsyncStorage here immediately after setting it.
+        // The primary role here is to set it in the context's state.
+        // The initial load in useEffect handles populating context from AsyncStorage.
       } else {
-        // Handle cases where token might be missing in response
+        // Handle cases where token or other vital info might be missing in response
         throw new Error(response?.message || 'Login failed: No token received');
       }
       setIsLoading(false);
@@ -94,19 +98,47 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const bootstrapAsync = async () => {
       let token = null;
-      let uData = null;
+      // uData will be processed and set inside the try block
+
       try {
         token = await AsyncStorage.getItem('userToken');
         const uDataString = await AsyncStorage.getItem('userData');
-        uData = uDataString ? JSON.parse(uDataString) : null;
+
+        if (token) { // Set token if it exists
+          setUserToken(token);
+        } else {
+          setUserToken(null); // Ensure token is null if not found
+        }
+
+        if (uDataString) { // Process and set userData if it exists
+          const parsedData = JSON.parse(uDataString); // Attempt to parse
+          // Basic integrity check for essential fields
+          if (parsedData && parsedData.username && parsedData.email) {
+            setUserData(parsedData);
+          } else {
+            console.warn('Restored userData from AsyncStorage is incomplete or invalid:', parsedData);
+            setUserData(null); // Clear if invalid to prevent app issues
+            await AsyncStorage.removeItem('userData'); // Remove corrupted/invalid data
+          }
+        } else {
+          setUserData(null); // Ensure userData is null if not found in storage
+        }
       } catch (e) {
-        console.error("Failed to restore token/userData from AsyncStorage:", e);
-        // Consider clearing storage if corrupted
-        // await AsyncStorage.multiRemove(['userToken', 'userData']);
+        console.error("Failed to restore or parse data from AsyncStorage:", e);
+        // If parsing failed or any other error, ensure states are clean
+        setUserToken(null);
+        setUserData(null);
+        // Optionally clear potentially corrupted items from storage
+        // These might fail if AsyncStorage itself is having issues, but worth a try.
+        try {
+          await AsyncStorage.removeItem('userToken');
+          await AsyncStorage.removeItem('userData');
+        } catch (removeError) {
+          console.error("Failed to remove corrupted items from AsyncStorage:", removeError);
+        }
+      } finally {
+        setIsLoading(false);
       }
-      setUserToken(token);
-      setUserData(uData);
-      setIsLoading(false);
     };
 
     bootstrapAsync();

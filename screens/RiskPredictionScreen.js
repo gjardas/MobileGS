@@ -163,7 +163,7 @@ const RiskPredictionScreen = () => {
       <Text style={styles.label}>{label}{required ? '*' : ''}</Text>
       <TextInput
         style={styles.input}
-        value={value}
+        value={String(value || '')} // Ensure value is always a string
         onChangeText={onChangeText}
         placeholder={placeholder}
         keyboardType={keyboardType}

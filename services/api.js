@@ -1,16 +1,8 @@
-// services/api.js
-// Este arquivo funciona como o cliente HTTP para interagir com a API GlobalSight.
-// Ele encapsula toda a lógica de chamadas de rede para os diversos endpoints da API.
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = 'http://localhost:8081'; // Updated port to 8081
+const API_BASE_URL = 'http://localhost:8080';
 
 const api = {
-  // --- Funções de Autenticação ---
-  /**
-   * Autentica um usuário e armazena o token JWT.
-   * POST /auth/login
-   */
   login: async (username, password) => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -35,17 +27,13 @@ const api = {
           email: data.email,
           roles: data.roles
         };
-        // Garantir que userDataToStore tenha os campos corretos antes de salvar
         if (userDataToStore.username && userDataToStore.email) {
            await AsyncStorage.setItem('userData', JSON.stringify(userDataToStore));
         } else {
-          // Logar um aviso se campos essenciais estiverem faltando na resposta da API
           console.warn('Campos username ou email faltando na resposta da API de login:', data);
-          // Consider not saving userData if essential fields are missing, or saving it partially
-          // For now, we'll still save what we have, but the warning is important.
           await AsyncStorage.setItem('userData', JSON.stringify(userDataToStore));
         }
-        return data; // Retorna AuthResponseDto completo
+        return data;
       } else {
         throw new Error(data?.message || 'Token não recebido do servidor.');
       }
@@ -55,10 +43,6 @@ const api = {
     }
   },
 
-  /**
-   * Registra um novo usuário na plataforma.
-   * POST /auth/register
-   */
   register: async (userData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -80,10 +64,6 @@ const api = {
     }
   },
 
-  /**
-   * Realiza o logout do usuário limpando o token do AsyncStorage.
-   * (Não envolve chamada de API neste exemplo, apenas limpeza local)
-   */
   logout: async () => {
     try {
       await AsyncStorage.removeItem('userToken');
@@ -95,9 +75,6 @@ const api = {
     }
   },
 
-  /**
-   * Obtém o cabeçalho de autenticação com o token JWT, se disponível.
-   */
   getAuthHeader: async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
@@ -111,11 +88,6 @@ const api = {
     }
   },
 
-  // --- Funções de API para Histórico de Desastres ---
-  /**
-   * Busca o histórico paginado de eventos de desastre.
-   * GET /api/history
-   */
   getDisasterHistory: async (page = 0, size = 10, sort = 'yearEvent,desc', filters = {}) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -145,10 +117,6 @@ const api = {
     }
   },
 
-  /**
-   * Busca um evento de desastre específico pelo seu DisNo (ID).
-   * GET /api/history/{disNo}
-   */
   getDisasterEventByDisNo: async (disNo) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -171,10 +139,6 @@ const api = {
     }
   },
 
-  /**
-   * Cria um novo evento de desastre. Requer ROLE_ADMIN.
-   * POST /api/history
-   */
   createDisasterEvent: async (eventData) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -202,10 +166,6 @@ const api = {
     }
   },
 
-  /**
-   * Atualiza um evento de desastre existente. Requer ROLE_ADMIN.
-   * PUT /api/history/{disNo}
-   */
   updateDisasterEvent: async (disNo, eventData) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -233,10 +193,6 @@ const api = {
     }
   },
 
-  /**
-   * Deleta um evento de desastre. Requer ROLE_ADMIN.
-   * DELETE /api/history/{disNo}
-   */
   deleteDisasterEvent: async (disNo) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -269,11 +225,6 @@ const api = {
     }
   },
 
-  // --- Funções de API para Simulações de Desastres ---
-  /**
-   * Cria uma ou mais novas simulações de desastre.
-   * POST /api/simulations
-   */
   createSimulation: async (simulationDataArray) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -301,10 +252,6 @@ const api = {
     }
   },
 
-  /**
-   * Busca uma simulação de desastre específica pelo seu ID.
-   * GET /api/simulations/{simulationId}
-   */
   getSimulationById: async (simulationId) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -327,10 +274,6 @@ const api = {
     }
   },
 
-  /**
-   * Busca as simulações de desastre criadas pelo usuário logado.
-   * GET /api/simulations
-   */
   getUserSimulations: async (page = 0, size = 10, sort = 'requestTimestamp,desc', filters = {}) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -364,10 +307,6 @@ const api = {
     }
   },
 
-  /**
-   * Aciona o processo de predição de IA para uma simulação específica.
-   * POST /api/simulations/{simulationId}/predict
-   */
   triggerSimulationPrediction: async (simulationId) => {
     try {
       const authHeaders = await api.getAuthHeader();
@@ -394,11 +333,6 @@ const api = {
     }
   },
 
-  // --- Funções de API para Simulação de Drone ---
-  /**
-   * Solicita o despacho simulado de drones para uma simulação específica.
-   * POST /api/drone/dispatch/{simulationId}
-   */
   getDroneDispatchForSimulation: async (simulationId) => {
     try {
       const authHeaders = await api.getAuthHeader();

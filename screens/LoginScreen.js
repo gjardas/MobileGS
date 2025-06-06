@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, ActivityIndicator, Pressable } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { useTheme as useCentralTheme } from '../styles/theme'; // Kept for potential future use
+import { useTheme as useCentralTheme } from '../styles/theme';
 
-// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -20,7 +19,6 @@ const localTheme = {
 
 const LoginScreen = ({ navigation }) => {
   const theme = localTheme;
-  // const centralThemeHook = useCentralTheme(); // Merge if needed
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -49,7 +47,6 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  // Styles using the new localTheme
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -59,7 +56,7 @@ const LoginScreen = ({ navigation }) => {
     },
     title: {
       fontSize: theme.fontSizes.headline,
-      fontFamily: theme.fonts.header, // Assuming system bold for header if Inter not loaded
+      fontFamily: theme.fonts.header,
       fontWeight: 'bold',
       color: theme.colors.primary,
       textAlign: 'center',
@@ -70,7 +67,6 @@ const LoginScreen = ({ navigation }) => {
       fontFamily: theme.fonts.regular,
       color: theme.colors.textSecondary,
       marginBottom: theme.spacing.xsmall,
-      // marginLeft: theme.spacing.xxsmall, // Optional: if labels need to be slightly offset
     },
     input: {
       backgroundColor: theme.colors.surface,
@@ -78,7 +74,7 @@ const LoginScreen = ({ navigation }) => {
       borderWidth: 1,
       borderRadius: theme.roundness,
       paddingHorizontal: theme.spacing.medium,
-      paddingVertical: theme.spacing.medium, // Adjusted for a common height around 48-50
+      paddingVertical: theme.spacing.medium,
       fontSize: theme.fontSizes.input,
       color: theme.colors.text,
       marginBottom: theme.spacing.medium,
@@ -96,7 +92,7 @@ const LoginScreen = ({ navigation }) => {
       paddingVertical: theme.spacing.medium,
       borderRadius: theme.roundness,
       marginTop: theme.spacing.medium,
-      backgroundColor: theme.colors.primary, // Default to primary
+      backgroundColor: theme.colors.primary,
       elevation: 2,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
@@ -106,7 +102,7 @@ const LoginScreen = ({ navigation }) => {
     buttonText: {
       color: theme.colors.lightText,
       fontSize: theme.fontSizes.button,
-      fontFamily: theme.fonts.bold, // Use bold font for button text
+      fontFamily: theme.fonts.bold, 
       fontWeight: 'bold',
       letterSpacing: 0.25,
     },
@@ -115,10 +111,10 @@ const LoginScreen = ({ navigation }) => {
       alignItems: 'center',
     },
     linkText: {
-      color: theme.colors.primary, // Links use primary color
+      color: theme.colors.primary,
       fontSize: theme.fontSizes.body,
       fontFamily: theme.fonts.regular,
-      textDecorationLine: 'underline', // Standard link appearance
+      textDecorationLine: 'underline',
     }
   });
 

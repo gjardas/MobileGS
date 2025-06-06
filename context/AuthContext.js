@@ -1,9 +1,6 @@
-// context/AuthContext.js
-// Este contexto gerencia o estado de autenticação global do aplicativo,
-// incluindo o token do usuário, dados do usuário e funções para login, logout e registro.
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../services/api'; // Presumes api.js is in ../services/
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -12,14 +9,11 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  /**
-   * Realiza o login do usuário chamando a API e armazenando o token e dados do usuário.
-   */
   const authLogin = async (username, password) => {
     setIsLoading(true);
     try {
-      const response = await api.login(username, password); // api.login should handle AsyncStorage internally
-      console.log('API Login Response:', response); // DEBUG
+      const response = await api.login(username, password); 
+      console.log('API Login Response:', response);
       if (response && response.token) {
         setUserToken(response.token);
 
@@ -29,39 +23,27 @@ export const AuthProvider = ({ children }) => {
           email: response.email,
           roles: response.roles
         };
-        console.log('Setting userData:', userDataPayload); // DEBUG
+        console.log('Setting userData:', userDataPayload);
         setUserData(userDataPayload);
-
-        // Note: api.login in services/api.js already saves token and constructed userData to AsyncStorage.
-        // So, we don't necessarily need to read it back from AsyncStorage here immediately after setting it.
-        // The primary role here is to set it in the context's state.
-        // The initial load in useEffect handles populating context from AsyncStorage.
       } else {
-        // Handle cases where token or other vital info might be missing in response
         throw new Error(response?.message || 'Login failed: No token received');
       }
       setIsLoading(false);
       return response;
     } catch (error) {
       console.error('Login error in AuthContext:', error);
-      setUserToken(null); // Ensure token is cleared on error
+      setUserToken(null); 
       setUserData(null);
       setIsLoading(false);
       throw error;
     }
   };
 
-  /**
-   * Registra um novo usuário.
-   */
   const authRegister = async (data) => {
     setIsLoading(true);
     try {
-      // data should be { username, email, password, completeName }
       const response = await api.register(data);
       setIsLoading(false);
-      // Decide on behavior: auto-login or redirect to login
-      // For now, just return the response. UI can handle next steps.
       return response;
     } catch (error) {
       console.error('Register error in AuthContext:', error);
@@ -70,20 +52,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Realiza o logout do usuário, limpando o token e os dados do AsyncStorage.
-   */
   const authLogout = async () => {
     setIsLoading(true);
     try {
-      await api.logout(); // api.logout should handle AsyncStorage internally
+      await api.logout(); 
     } catch (error) {
       console.error("Error during API logout:", error);
-      // Still proceed to clear client-side context even if API call fails
     } finally {
       setUserToken(null);
       setUserData(null);
-      // Ensure AsyncStorage is cleared, even if api.logout failed or didn't do it
       try {
         await AsyncStorage.removeItem('userToken');
         await AsyncStorage.removeItem('userData');
@@ -94,42 +71,39 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // useEffect para verificar o token no AsyncStorage ao montar
   useEffect(() => {
     const bootstrapAsync = async () => {
       let token = null;
-      // uData will be processed and set inside the try block
+
 
       try {
         token = await AsyncStorage.getItem('userToken');
         const uDataString = await AsyncStorage.getItem('userData');
 
-        if (token) { // Set token if it exists
+        if (token) { 
           setUserToken(token);
         } else {
-          setUserToken(null); // Ensure token is null if not found
+          setUserToken(null); 
         }
 
-        if (uDataString) { // Process and set userData if it exists
-          const parsedData = JSON.parse(uDataString); // Attempt to parse
-          // Basic integrity check for essential fields
+        if (uDataString) { 
+          const parsedData = JSON.parse(uDataString);
+
           if (parsedData && parsedData.username && parsedData.email) {
             setUserData(parsedData);
           } else {
             console.warn('Restored userData from AsyncStorage is incomplete or invalid:', parsedData);
-            setUserData(null); // Clear if invalid to prevent app issues
-            await AsyncStorage.removeItem('userData'); // Remove corrupted/invalid data
+            setUserData(null); 
+            await AsyncStorage.removeItem('userData'); 
           }
         } else {
-          setUserData(null); // Ensure userData is null if not found in storage
+          setUserData(null); 
         }
       } catch (e) {
         console.error("Failed to restore or parse data from AsyncStorage:", e);
-        // If parsing failed or any other error, ensure states are clean
+
         setUserToken(null);
         setUserData(null);
-        // Optionally clear potentially corrupted items from storage
-        // These might fail if AsyncStorage itself is having issues, but worth a try.
         try {
           await AsyncStorage.removeItem('userToken');
           await AsyncStorage.removeItem('userData');

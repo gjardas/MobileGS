@@ -1,9 +1,9 @@
 import React from 'react';
-import { ScrollView, View, Text, Button, StyleSheet, Pressable } from 'react-native'; // Added Pressable
-import { useTheme as useCentralTheme } from '../styles/theme'; // Keep if central theme might be fixed later
+import { ScrollView, View, Text, Button, StyleSheet, Pressable } from 'react-native';
+import { useTheme as useCentralTheme } from '../styles/theme'; 
 import Card from '../components/Cards';
 
-// EOSDA-inspired local theme definition
+
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -19,9 +19,7 @@ const localTheme = {
 };
 
 const AboutScreen = ({ navigation }) => {
-  const theme = localTheme; // Prioritize localTheme
-  // const centralTheme = useCentralTheme(); // Merge if needed: const theme = { ...centralTheme, ...localTheme };
-
+  const theme = localTheme;
   const styles = StyleSheet.create({
     scrollViewContainer: {
       flexGrow: 1,
@@ -42,11 +40,11 @@ const AboutScreen = ({ navigation }) => {
     },
     cardStyle: {
       width: '95%',
-      backgroundColor: theme.colors.card, // Use theme card color
-      borderRadius: theme.roundness,    // Use theme roundness
+      backgroundColor: theme.colors.card,
+      borderRadius: theme.roundness,  
       marginBottom: theme.spacing.medium,
       padding: theme.spacing.medium,
-      elevation: 2,                   // Standard elevation for cards
+      elevation: 2,  
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.18,
@@ -56,23 +54,23 @@ const AboutScreen = ({ navigation }) => {
       fontSize: theme.fontSizes.title,
       fontWeight: 'bold',
       fontFamily: theme.fonts.header,
-      marginBottom: theme.spacing.medium, // Increased margin
+      marginBottom: theme.spacing.medium, 
       color: theme.colors.primary,
     },
     cardText: {
       fontSize: theme.fontSizes.body,
       fontFamily: theme.fonts.regular,
-      lineHeight: theme.fontSizes.body * 1.5, // Improved line height
+      lineHeight: theme.fontSizes.body * 1.5, 
       marginBottom: theme.spacing.small,
       color: theme.colors.text,
     },
     boldText: {
       fontWeight: 'bold',
       fontFamily: theme.fonts.bold,
-      color: theme.colors.text, // Ensure bold text also uses theme color
+      color: theme.colors.text,
     },
-    buttonContainer: { // For the Pressable button
-      marginTop: theme.spacing.large, // More space before button
+    buttonContainer: { 
+      marginTop: theme.spacing.large, 
       width: '80%',
     },
     pressableButton: {
@@ -96,10 +94,6 @@ const AboutScreen = ({ navigation }) => {
     <ScrollView contentContainerStyle={styles.scrollViewContainer} style={{backgroundColor: theme.colors.background}}>
       <View style={styles.container}>
         <Text style={styles.mainTitle}>Sobre o SAR-Drone</Text>
-
-        {/* Assuming Card component from '../components/Cards' can accept style prop
-            and will merge it or use it appropriately. If Card has its own fixed styling,
-            these style props might be partially or fully ignored. */}
         <Card style={styles.cardStyle}>
           <Text style={styles.cardTitle}>Visão Geral</Text>
           <Text style={styles.cardText}>

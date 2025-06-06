@@ -3,15 +3,15 @@ import { useTheme } from '../styles/theme';
 import AppButton from '../components/AppButton';
 import Card from '../components/Card';
 import CustomAlert from '../components/CustomAlert';
-import api from '../services/api'; // Importa o serviço de API
+import api from '../services/api';
 
-const AlertsScreen = ({ navigate }) => { // Renomeado de EmergencyInfoScreen
+const AlertsScreen = ({ navigate }) => {
   const { colors, fonts } = useTheme();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentAlert, setCurrentAlert] = useState(null); // Para edição
+  const [currentAlert, setCurrentAlert] = useState(null);
   const [alertForm, setAlertForm] = useState({ title: '', description: '', severity: 'Baixa' });
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -26,7 +26,7 @@ const AlertsScreen = ({ navigate }) => { // Renomeado de EmergencyInfoScreen
     setError(null);
     try {
       const data = await api.getAlerts();
-      setAlerts(data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))); // Ordena por mais recente
+      setAlerts(data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))); 
     } catch (err) {
       setAlertMessage(err.message);
       setAlertType('danger');
@@ -44,15 +44,13 @@ const AlertsScreen = ({ navigate }) => { // Renomeado de EmergencyInfoScreen
       return;
     }
 
-    setLoading(true); // Ativa o loader para a operação de CRUD
+    setLoading(true); 
     try {
       if (currentAlert) {
-        // Atualizar Alerta
         await api.updateAlert({ ...currentAlert, ...alertForm });
         setAlertMessage('Alerta atualizado com sucesso!');
         setAlertType('success');
       } else {
-        // Criar Alerta
         await api.createAlert(alertForm);
         setAlertMessage('Alerta criado com sucesso!');
         setAlertType('success');
@@ -61,7 +59,7 @@ const AlertsScreen = ({ navigate }) => { // Renomeado de EmergencyInfoScreen
       setIsModalVisible(false);
       setAlertForm({ title: '', description: '', severity: 'Baixa' });
       setCurrentAlert(null);
-      fetchAlerts(); // Recarrega a lista após a operação
+      fetchAlerts();
     } catch (err) {
       setAlertMessage(err.message);
       setAlertType('danger');
@@ -72,13 +70,13 @@ const AlertsScreen = ({ navigate }) => { // Renomeado de EmergencyInfoScreen
   };
 
   const handleDeleteAlert = async (id) => {
-    setLoading(true); // Ativa o loader
+    setLoading(true);
     try {
       await api.deleteAlert(id);
       setAlertMessage('Alerta deletado com sucesso!');
       setAlertType('success');
       setAlertVisible(true);
-      fetchAlerts(); // Recarrega a lista
+      fetchAlerts();
     } catch (err) {
       setAlertMessage(err.message);
       setAlertType('danger');
@@ -100,7 +98,7 @@ const AlertsScreen = ({ navigate }) => { // Renomeado de EmergencyInfoScreen
     setIsModalVisible(true);
   };
 
-  if (loading && alerts.length === 0) { // Mostra loader apenas na primeira carga ou se não há dados
+  if (loading && alerts.length === 0) {
     return (
       <div style={{
         minHeight: '100vh',
@@ -201,8 +199,6 @@ const AlertsScreen = ({ navigate }) => { // Renomeado de EmergencyInfoScreen
         title="Voltar para a Home"
         onClick={() => navigate('Home')}
       />
-
-      {/* Modal para Adicionar/Editar Alerta */}
       {isModalVisible && (
         <div style={{
           position: 'fixed',

@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Alert, Pressable } from 'react-native'; // Removed Button as it's replaced by Pressable
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Alert, Pressable } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme as useCentralTheme } from '../styles/theme';
 
-// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -22,7 +21,6 @@ const localTheme = {
 
 const DroneControlScreen = () => {
   const theme = localTheme;
-  // const centralThemeHook = useCentralTheme(); // Merge if needed
 
   const route = useRoute();
   const { simulationId, disasterType } = route.params || {};
@@ -68,14 +66,14 @@ const DroneControlScreen = () => {
     let buttonBackgroundColor = theme.colors.primary;
     if (type === 'accent') buttonBackgroundColor = theme.colors.accent;
     else if (type === 'secondary') buttonBackgroundColor = theme.colors.secondary;
-    // Add other types if needed
+
 
     return (
       <Pressable
         style={({ pressed }) => [
-          styles.pressableButton, // General button style
+          styles.pressableButton,
           { backgroundColor: buttonBackgroundColor, opacity: pressed ? 0.8 : 1 },
-          style, // Allow custom styles to be passed
+          style,
         ]}
         onPress={onPress}
       >
@@ -84,17 +82,17 @@ const DroneControlScreen = () => {
     );
   };
 
-  // Styles using the new localTheme
+
   const styles = StyleSheet.create({
-    scrollViewContainer: { // Style for the ScrollView component itself
+    scrollViewContainer: {
       flex: 1,
       backgroundColor: theme.colors.background,
     },
-    container: { // For content inside ScrollView
-      flexGrow: 1, // Allows content to grow and enable scrolling
+    container: { 
+      flexGrow: 1,
       padding: theme.spacing.medium,
     },
-    centered: { // For loading and error states when they are full screen
+    centered: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
@@ -113,7 +111,7 @@ const DroneControlScreen = () => {
       fontSize: theme.fontSizes.subheading,
       fontFamily: theme.fonts.regular,
       color: theme.colors.textSecondary,
-      marginBottom: theme.spacing.medium, // Adjusted margin
+      marginBottom: theme.spacing.medium,
       textAlign: 'center',
     },
     infoCard: {
@@ -134,11 +132,11 @@ const DroneControlScreen = () => {
       fontFamily: theme.fonts.regular,
       color: theme.colors.text,
       marginBottom: theme.spacing.small,
-      lineHeight: theme.fontSizes.body * 1.5, // Improved line height
+      lineHeight: theme.fontSizes.body * 1.5,
     },
     infoLabel: {
       fontWeight: 'bold',
-      fontFamily: theme.fonts.bold, // Use bold font from theme
+      fontFamily: theme.fonts.bold, 
       color: theme.colors.text,
     },
     errorText: {
@@ -151,11 +149,11 @@ const DroneControlScreen = () => {
     pressableButton: {
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: theme.spacing.medium, // Standardized padding
+      paddingVertical: theme.spacing.medium, 
       paddingHorizontal: theme.spacing.large,
       borderRadius: theme.roundness,
       marginVertical: theme.spacing.small,
-      elevation: 2, // Standardized elevation
+      elevation: 2,
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.2,

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, ActivityIndicator, ScrollView, Pressable } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { useTheme as useCentralTheme } from '../styles/theme'; // Kept for potential future use
+import { useTheme as useCentralTheme } from '../styles/theme';
 
-// EOSDA-inspired local theme definition
+
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -20,15 +20,13 @@ const localTheme = {
 
 const RegisterScreen = ({ navigation }) => {
   const theme = localTheme;
-  // const centralThemeHook = useCentralTheme(); // Merge if needed
-
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [completeName, setCompleteName] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register } = useAuth(); // Assuming logout is not directly needed here, but could be added to useAuth() if session expires during long form fill
+  const { register } = useAuth();
 
   const handleRegister = async () => {
     if (!username || !email || !password || !completeName) {
@@ -44,8 +42,6 @@ const RegisterScreen = ({ navigation }) => {
       navigation.navigate('Login');
     } catch (err) {
       console.error("Registration failed on screen:", err);
-      // Assuming register API doesn't typically return 401 unless it's a server config issue
-      // If it could, similar 401 handling as login could be added.
       setError(err.message || 'Falha ao registrar. Tente novamente.');
     } finally {
       setIsSubmitting(false);
@@ -54,15 +50,14 @@ const RegisterScreen = ({ navigation }) => {
 
   // Styles using the new localTheme
   const styles = StyleSheet.create({
-    scrollContainer: { // For ScrollView's own style if needed, e.g., backgroundColor
-      flex: 1, // Ensure ScrollView takes up space
+    scrollContainer: {
+      flex: 1,
       backgroundColor: theme.colors.background,
     },
-    container: { // For content inside ScrollView
-      flexGrow: 1, // Allows content to grow and enable scrolling
+    container: { 
+      flexGrow: 1,
       justifyContent: 'center',
       padding: theme.spacing.large,
-      // backgroundColor is on ScrollView now
     },
     title: {
       fontSize: theme.fontSizes.headline,
@@ -70,14 +65,13 @@ const RegisterScreen = ({ navigation }) => {
       fontWeight: 'bold',
       color: theme.colors.primary,
       textAlign: 'center',
-      marginBottom: theme.spacing.large, // Reduced from xlarge for tighter packing on register
+      marginBottom: theme.spacing.large, 
     },
     label: {
       fontSize: theme.fontSizes.body,
       fontFamily: theme.fonts.regular,
       color: theme.colors.textSecondary,
       marginBottom: theme.spacing.xsmall,
-      // marginLeft: theme.spacing.xxsmall, // Optional
     },
     input: {
       backgroundColor: theme.colors.surface,
@@ -85,7 +79,7 @@ const RegisterScreen = ({ navigation }) => {
       borderWidth: 1,
       borderRadius: theme.roundness,
       paddingHorizontal: theme.spacing.medium,
-      paddingVertical: theme.spacing.medium, // Consistent padding for height
+      paddingVertical: theme.spacing.medium,
       fontSize: theme.fontSizes.input,
       color: theme.colors.text,
       marginBottom: theme.spacing.medium,
@@ -102,7 +96,7 @@ const RegisterScreen = ({ navigation }) => {
       justifyContent: 'center',
       paddingVertical: theme.spacing.medium,
       borderRadius: theme.roundness,
-      marginTop: theme.spacing.medium, // Spacing from last input
+      marginTop: theme.spacing.medium, 
       backgroundColor: theme.colors.primary,
       elevation: 2,
       shadowColor: '#000',
@@ -131,7 +125,6 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.container}>
-      {/* Removed the extra View with styles.container to simplify nesting with ScrollView */}
       <Text style={styles.title}>Criar Nova Conta</Text>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 

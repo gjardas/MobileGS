@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Alert, ScrollView, Pressable } from 'react-nati
 import { useAuth } from '../context/AuthContext';
 import { useTheme as useCentralTheme } from '../styles/theme';
 
-// EOSDA-inspired local theme definition
+
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -20,8 +20,6 @@ const localTheme = {
 
 const HomeScreen = ({ navigation }) => {
   const theme = localTheme;
-  // const centralThemeHook = useCentralTheme(); // Merge if needed
-
   const { logout, userData } = useAuth();
   console.log('HomeScreen userData:', userData);
 
@@ -35,9 +33,9 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  // Button Component using Pressable for consistent styling
+
   const ThemedButton = ({ title, onPress, type = 'primary', style = {} }) => {
-    let buttonBackgroundColor = theme.colors.primary; // Default to primary
+    let buttonBackgroundColor = theme.colors.primary;
     switch (type) {
       case 'secondary':
         buttonBackgroundColor = theme.colors.secondary;
@@ -51,7 +49,7 @@ const HomeScreen = ({ navigation }) => {
       case 'info':
         buttonBackgroundColor = theme.colors.info;
         break;
-      case 'custom': // Allows passing full custom backgroundColor via style prop
+      case 'custom':
         buttonBackgroundColor = style.backgroundColor || theme.colors.primary;
         break;
     }
@@ -78,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
     container: {
       flex: 1,
       alignItems: 'center',
-      paddingVertical: theme.spacing.large, // More vertical padding for the screen
+      paddingVertical: theme.spacing.large,
       paddingHorizontal: theme.spacing.medium,
     },
     headerTitle: {
@@ -88,7 +86,7 @@ const HomeScreen = ({ navigation }) => {
       color: theme.colors.primary,
       textAlign: 'center',
       marginTop: theme.spacing.medium,
-      marginBottom: theme.spacing.small, // Adjusted spacing
+      marginBottom: theme.spacing.small, 
     },
     headerSubtitle: {
       fontSize: theme.fontSizes.subheading,
@@ -103,13 +101,13 @@ const HomeScreen = ({ navigation }) => {
       color: theme.colors.text,
       textAlign: 'center',
       marginBottom: theme.spacing.large,
-      padding: theme.spacing.medium, // Increased padding
+      padding: theme.spacing.medium, 
       backgroundColor: theme.colors.surface,
       borderRadius: theme.roundness,
       borderWidth: 1,
       borderColor: theme.colors.border,
       width: '95%',
-      elevation: 1, // Subtle elevation for user info
+      elevation: 1,
     },
     card: {
       width: '95%',
@@ -118,10 +116,10 @@ const HomeScreen = ({ navigation }) => {
       padding: theme.spacing.medium,
       marginBottom: theme.spacing.large,
       elevation: 3,
-      shadowColor: '#000000', // Softer black for shadow
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1, // Softer shadow
-      shadowRadius: 3,    // Slightly larger radius
+      shadowOpacity: 0.1,
+      shadowRadius: 3,    
       borderWidth: 1,
       borderColor: theme.colors.border,
     },
@@ -137,13 +135,13 @@ const HomeScreen = ({ navigation }) => {
       fontFamily: theme.fonts.regular,
       color: theme.colors.text,
       lineHeight: theme.fontSizes.body * 1.5,
-      marginBottom: theme.spacing.medium, // More space after main card text
+      marginBottom: theme.spacing.medium, 
     },
     pressableButton: {
       alignItems: 'center',
       justifyContent: 'center',
       paddingVertical: theme.spacing.medium,
-      paddingHorizontal: theme.spacing.medium, // Adjusted for typical button width
+      paddingHorizontal: theme.spacing.medium, 
       borderRadius: theme.roundness,
       marginVertical: theme.spacing.small,
       elevation: 2,
@@ -151,14 +149,14 @@ const HomeScreen = ({ navigation }) => {
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.2,
       shadowRadius: 1.5,
-      minWidth: '60%', // Ensure buttons have a decent minimum width
+      minWidth: '60%',
     },
     pressableButtonText: {
       fontSize: theme.fontSizes.button,
       fontFamily: theme.fonts.bold,
       color: theme.colors.lightText,
       fontWeight: 'bold',
-      textAlign: 'center', // Ensure text is centered if it wraps
+      textAlign: 'center',
     },
     logoutButtonContainer: {
       width: '95%',
@@ -188,7 +186,6 @@ const HomeScreen = ({ navigation }) => {
           <ThemedButton title="Minhas Simulações" onPress={() => navigation.navigate('Alerts')} type="primary" />
           <ThemedButton title="Histórico de Desastres" onPress={() => navigation.navigate('History')} type="info" />
           <ThemedButton title="Criar Nova Simulação" onPress={() => navigation.navigate('RiskPrediction')} type="secondary" />
-          {/* Custom style for DroneControl to use accent color */}
           <ThemedButton
             title="Controle de Drones (Simulação)"
             onPress={() => navigation.navigate('DroneControl')}

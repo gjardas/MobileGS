@@ -1,29 +1,28 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Button, ScrollView, Alert, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Alert, Pressable } from 'react-native'; // Removed Button as it's replaced by Pressable
 import { useRoute } from '@react-navigation/native';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme as useCentralTheme } from '../styles/theme';
 
-// Local theme definition
+// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
-    primary: '#2E8B57', secondary: '#4682B4', accent: '#FF6347',
-    background: '#F0F2F5', surface: '#FFFFFF', card: '#FFFFFF',
-    text: '#333333', textSecondary: '#555555', placeholder: '#999999',
-    lightText: '#FFFFFF', error: '#DC3545', success: '#28A745',
-    info: '#17A2B8', warning: '#FFC107', border: '#DDDDDD', disabled: '#CCCCCC',
+    primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
+    background: '#F4F6F8', surface: '#FFFFFF', card: '#FFFFFF',
+    text: '#212121', textSecondary: '#757575', placeholder: '#BDBDBD',
+    lightText: '#FFFFFF', error: '#D32F2F', success: '#388E3C',
+    info: '#1976D2', warning: '#FFA000', border: '#E0E0E0', disabled: '#BDBDBD',
   },
   fonts: { regular: 'System', bold: 'System', header: 'System' },
-  fontSizes: { caption: 12, button: 14, body: 16, input: 16, subheading: 18, title: 20, headline: 24, display1: 32 },
+  fontSizes: { caption: 12, button: 15, body: 16, input: 16, subheading: 18, title: 22, headline: 26 },
   spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 16, large: 24, xlarge: 32, xxlarge: 48 },
   roundness: 8,
 };
 
-
 const DroneControlScreen = () => {
-  const theme = localTheme; // Prioritize localTheme
-  // const { colors, fonts } = useCentralTheme(); // Or merge if central theme is fixed
+  const theme = localTheme;
+  // const centralThemeHook = useCentralTheme(); // Merge if needed
 
   const route = useRoute();
   const { simulationId, disasterType } = route.params || {};
@@ -65,17 +64,18 @@ const DroneControlScreen = () => {
     fetchDroneDispatchInfo();
   }, [fetchDroneDispatchInfo]);
 
-  // Reusable ThemedButton for this screen
   const ThemedButton = ({ title, onPress, type = 'primary', style = {} }) => {
-    let backgroundColor = theme.colors.primary;
-    if (type === 'accent') backgroundColor = theme.colors.accent;
+    let buttonBackgroundColor = theme.colors.primary;
+    if (type === 'accent') buttonBackgroundColor = theme.colors.accent;
+    else if (type === 'secondary') buttonBackgroundColor = theme.colors.secondary;
+    // Add other types if needed
 
     return (
       <Pressable
         style={({ pressed }) => [
-          styles.pressableButton,
-          { backgroundColor, opacity: pressed ? 0.8 : 1 },
-          style,
+          styles.pressableButton, // General button style
+          { backgroundColor: buttonBackgroundColor, opacity: pressed ? 0.8 : 1 },
+          style, // Allow custom styles to be passed
         ]}
         onPress={onPress}
       >
@@ -84,16 +84,17 @@ const DroneControlScreen = () => {
     );
   };
 
+  // Styles using the new localTheme
   const styles = StyleSheet.create({
-    scrollViewContainer: {
-      flexGrow: 1,
+    scrollViewContainer: { // Style for the ScrollView component itself
+      flex: 1,
       backgroundColor: theme.colors.background,
     },
-    container: {
-      flex: 1,
+    container: { // For content inside ScrollView
+      flexGrow: 1, // Allows content to grow and enable scrolling
       padding: theme.spacing.medium,
     },
-    centered: {
+    centered: { // For loading and error states when they are full screen
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
@@ -112,7 +113,7 @@ const DroneControlScreen = () => {
       fontSize: theme.fontSizes.subheading,
       fontFamily: theme.fonts.regular,
       color: theme.colors.textSecondary,
-      marginBottom: theme.spacing.large,
+      marginBottom: theme.spacing.medium, // Adjusted margin
       textAlign: 'center',
     },
     infoCard: {
@@ -123,7 +124,7 @@ const DroneControlScreen = () => {
       borderWidth: 1,
       borderColor: theme.colors.border,
       elevation: 2,
-      shadowColor: '#000',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 1.5,
@@ -133,12 +134,12 @@ const DroneControlScreen = () => {
       fontFamily: theme.fonts.regular,
       color: theme.colors.text,
       marginBottom: theme.spacing.small,
-      lineHeight: theme.fontSizes.body * 1.4,
+      lineHeight: theme.fontSizes.body * 1.5, // Improved line height
     },
     infoLabel: {
       fontWeight: 'bold',
-      fontFamily: theme.fonts.bold,
-      color: theme.colors.text, // Or theme.colors.primary for more emphasis
+      fontFamily: theme.fonts.bold, // Use bold font from theme
+      color: theme.colors.text,
     },
     errorText: {
       color: theme.colors.error,
@@ -150,11 +151,15 @@ const DroneControlScreen = () => {
     pressableButton: {
       alignItems: 'center',
       justifyContent: 'center',
-      paddingVertical: theme.spacing.small, // Slightly smaller for these actions
-      paddingHorizontal: theme.spacing.medium,
+      paddingVertical: theme.spacing.medium, // Standardized padding
+      paddingHorizontal: theme.spacing.large,
       borderRadius: theme.roundness,
       marginVertical: theme.spacing.small,
-      elevation: 1, // Subtle shadow
+      elevation: 2, // Standardized elevation
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.2,
+      shadowRadius: 1.5,
     },
     pressableButtonText: {
       fontSize: theme.fontSizes.button,
@@ -166,8 +171,10 @@ const DroneControlScreen = () => {
         color: theme.colors.text,
         marginTop: theme.spacing.small,
         fontSize: theme.fontSizes.body,
+        fontFamily: theme.fonts.regular,
     }
   });
+
 
   if (!simulationId) {
     return (
@@ -190,7 +197,7 @@ const DroneControlScreen = () => {
     <ScrollView style={styles.scrollViewContainer} contentContainerStyle={styles.container}>
       <Text style={styles.title}>Despacho de Drones</Text>
       <Text style={styles.subtitle}>Simulação ID: {simulationId}</Text>
-      {disasterType && <Text style={[styles.subtitle, {fontSize: theme.fontSizes.body, marginBottom: theme.spacing.medium}]}>Tipo de Desastre: {disasterType}</Text>}
+      {disasterType && <Text style={[styles.subtitle, {fontSize: theme.fontSizes.body, color: theme.colors.text, marginBottom: theme.spacing.large}]}>Tipo de Desastre: {disasterType}</Text>}
 
       {error && (
         <View style={styles.infoCard}>

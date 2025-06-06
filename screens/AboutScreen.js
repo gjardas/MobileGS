@@ -1,71 +1,105 @@
 import React from 'react';
-import { ScrollView, View, Text, Button, StyleSheet } from 'react-native';
-import { useTheme } from '../styles/theme'; // Assuming this provides RN compatible theme
-import Card from '../components/Cards'; // Assuming this is an RN compatible Card component
+import { ScrollView, View, Text, Button, StyleSheet, Pressable } from 'react-native'; // Added Pressable
+import { useTheme as useCentralTheme } from '../styles/theme'; // Keep if central theme might be fixed later
+import Card from '../components/Cards';
 
-const AboutScreen = ({ navigation }) => { // Changed 'navigate' to 'navigation' from react-navigation
-  const { colors, fonts, spacing, roundness } = useTheme();
+// EOSDA-inspired local theme definition
+const localTheme = {
+  colors: {
+    primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
+    background: '#F4F6F8', surface: '#FFFFFF', card: '#FFFFFF',
+    text: '#212121', textSecondary: '#757575', placeholder: '#BDBDBD',
+    lightText: '#FFFFFF', error: '#D32F2F', success: '#388E3C',
+    info: '#1976D2', warning: '#FFA000', border: '#E0E0E0', disabled: '#BDBDBD',
+  },
+  fonts: { regular: 'System', bold: 'System', header: 'System' },
+  fontSizes: { caption: 12, button: 15, body: 16, input: 16, subheading: 18, title: 22, headline: 26 },
+  spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 16, large: 24, xlarge: 32, xxlarge: 48 },
+  roundness: 8,
+};
 
-  // Define styles using StyleSheet
+const AboutScreen = ({ navigation }) => {
+  const theme = localTheme; // Prioritize localTheme
+  // const centralTheme = useCentralTheme(); // Merge if needed: const theme = { ...centralTheme, ...localTheme };
+
   const styles = StyleSheet.create({
     scrollViewContainer: {
       flexGrow: 1,
+      backgroundColor: theme.colors.background,
     },
     container: {
       flex: 1,
-      padding: spacing?.medium || 16,
-      backgroundColor: colors.background,
-      alignItems: 'center', // Center cards horizontally
+      padding: theme.spacing.medium,
+      alignItems: 'center',
     },
     mainTitle: {
-      fontSize: fonts?.sizes?.xlarge || 24, // Using theme font sizes
+      fontSize: theme.fontSizes.headline,
       fontWeight: 'bold',
-      marginBottom: spacing?.large || 24,
+      fontFamily: theme.fonts.header,
+      marginBottom: theme.spacing.large,
       textAlign: 'center',
-      color: colors.primary,
-      fontFamily: fonts?.header || 'System', // Using theme header font or system default
+      color: theme.colors.primary,
     },
-    cardStyle: { // Style for the Card component if it doesn't have its own that fits
-      width: '95%', // Make cards take most of the width
-      marginBottom: spacing?.medium || 16,
-      padding: spacing?.medium || 16, // Default padding if Card doesn't handle it
-      // If Card is a simple View, add these:
-      // backgroundColor: colors.surface || colors.card || '#ffffff',
-      // borderRadius: roundness || 8,
-      // elevation: 3,
-      // shadowColor: '#000',
-      // shadowOffset: { width: 0, height: 1 },
-      // shadowOpacity: 0.2,
-      // shadowRadius: 2,
+    cardStyle: {
+      width: '95%',
+      backgroundColor: theme.colors.card, // Use theme card color
+      borderRadius: theme.roundness,    // Use theme roundness
+      marginBottom: theme.spacing.medium,
+      padding: theme.spacing.medium,
+      elevation: 2,                   // Standard elevation for cards
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.18,
+      shadowRadius: 1.00,
     },
     cardTitle: {
-      fontSize: fonts?.sizes?.large || 20,
+      fontSize: theme.fontSizes.title,
       fontWeight: 'bold',
-      marginBottom: spacing?.small || 8,
-      color: colors.primary,
-      fontFamily: fonts?.header || 'System',
+      fontFamily: theme.fonts.header,
+      marginBottom: theme.spacing.medium, // Increased margin
+      color: theme.colors.primary,
     },
     cardText: {
-      fontSize: fonts?.sizes?.medium || 16,
-      lineHeight: (fonts?.sizes?.medium || 16) * 1.4,
-      marginBottom: spacing?.small || 8,
-      color: colors.text,
-      fontFamily: fonts?.regular || 'System',
+      fontSize: theme.fontSizes.body,
+      fontFamily: theme.fonts.regular,
+      lineHeight: theme.fontSizes.body * 1.5, // Improved line height
+      marginBottom: theme.spacing.small,
+      color: theme.colors.text,
     },
     boldText: {
       fontWeight: 'bold',
+      fontFamily: theme.fonts.bold,
+      color: theme.colors.text, // Ensure bold text also uses theme color
     },
-    buttonContainer: {
-      marginTop: spacing?.medium || 16,
-      width: '80%', // Consistent button width
+    buttonContainer: { // For the Pressable button
+      marginTop: theme.spacing.large, // More space before button
+      width: '80%',
+    },
+    pressableButton: {
+      backgroundColor: theme.colors.primary,
+      paddingVertical: theme.spacing.medium,
+      paddingHorizontal: theme.spacing.large,
+      borderRadius: theme.roundness,
+      alignItems: 'center',
+      justifyContent: 'center',
+      elevation: 2,
+    },
+    pressableButtonText: {
+      color: theme.colors.lightText,
+      fontSize: theme.fontSizes.button,
+      fontWeight: 'bold',
+      fontFamily: theme.fonts.bold,
     },
   });
 
   return (
-    <ScrollView style={{backgroundColor: colors.background}} contentContainerStyle={styles.scrollViewContainer}>
+    <ScrollView contentContainerStyle={styles.scrollViewContainer} style={{backgroundColor: theme.colors.background}}>
       <View style={styles.container}>
         <Text style={styles.mainTitle}>Sobre o SAR-Drone</Text>
 
+        {/* Assuming Card component from '../components/Cards' can accept style prop
+            and will merge it or use it appropriately. If Card has its own fixed styling,
+            these style props might be partially or fully ignored. */}
         <Card style={styles.cardStyle}>
           <Text style={styles.cardTitle}>Visão Geral</Text>
           <Text style={styles.cardText}>
@@ -97,11 +131,12 @@ const AboutScreen = ({ navigation }) => { // Changed 'navigate' to 'navigation' 
         </Card>
 
         <View style={styles.buttonContainer}>
-          <Button
-            title="Voltar para a Home"
-            onPress={() => navigation.navigate('HomeApp')} // Corrected to 'HomeApp' as defined in App.js
-            color={colors.primary}
-          />
+          <Pressable
+            style={({ pressed }) => [styles.pressableButton, { opacity: pressed ? 0.8 : 1 }]}
+            onPress={() => navigation.navigate('HomeApp')}
+          >
+            <Text style={styles.pressableButtonText}>Voltar para a Home</Text>
+          </Pressable>
         </View>
       </View>
     </ScrollView>

@@ -7,36 +7,36 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
-  Pressable, // Import Pressable
+  Pressable,
 } from 'react-native';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme as useCentralTheme } from '../styles/theme';
 import { useNavigation } from '@react-navigation/native';
 
-// Local theme definition
+// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
-    primary: '#2E8B57', secondary: '#4682B4', accent: '#FF6347',
-    background: '#F0F2F5', surface: '#FFFFFF', card: '#FFFFFF',
-    text: '#333333', textSecondary: '#555555', placeholder: '#999999',
-    lightText: '#FFFFFF', error: '#DC3545', success: '#28A745',
-    info: '#17A2B8', warning: '#FFC107', border: '#DDDDDD', disabled: '#CCCCCC',
+    primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
+    background: '#F4F6F8', surface: '#FFFFFF', card: '#FFFFFF',
+    text: '#212121', textSecondary: '#757575', placeholder: '#BDBDBD',
+    lightText: '#FFFFFF', error: '#D32F2F', success: '#388E3C',
+    info: '#1976D2', warning: '#FFA000', border: '#E0E0E0', disabled: '#BDBDBD',
   },
   fonts: { regular: 'System', bold: 'System', header: 'System' },
-  fontSizes: { caption: 12, button: 14, body: 16, input: 16, subheading: 18, title: 20, headline: 24, display1: 32 },
+  fontSizes: { caption: 12, button: 15, body: 16, input: 16, subheading: 18, title: 22, headline: 26 },
   spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 16, large: 24, xlarge: 32, xxlarge: 48 },
   roundness: 8,
 };
 
 const RiskPredictionScreen = () => {
-  const theme = localTheme; // Prioritize localTheme
-  // const centralThemeHook = useCentralTheme(); // Could merge if needed
+  const theme = localTheme;
+  // const centralThemeHook = useCentralTheme(); // Merge if needed
 
   const navigation = useNavigation();
   const { logout } = useAuth();
 
-  // Form States (condensed for brevity, assume they are all here)
+  // Form States
   const [inputYear, setInputYear] = useState('');
   const [inputStartMonth, setInputStartMonth] = useState('');
   const [inputStartDay, setInputStartDay] = useState('');
@@ -58,7 +58,6 @@ const RiskPredictionScreen = () => {
   const [error, setError] = useState(null);
 
   const clearForm = () => {
-    // (Implementation as before)
     setInputYear(''); setInputStartMonth(''); setInputStartDay('');
     setInputEndYear(''); setInputEndMonth(''); setInputEndDay('');
     setInputDisasterGroup('Natural'); setInputDisasterSubgroup('Hydrological');
@@ -106,14 +105,17 @@ const RiskPredictionScreen = () => {
     }
   };
 
-  // Styles using localTheme
   const styles = StyleSheet.create({
-    scrollViewContent: { // Renamed from container to avoid conflict with View's container
-      flexGrow: 1,
-      padding: theme.spacing.medium, // Consistent padding
+    scrollViewStyle: { // Style for the ScrollView component itself
+        flex: 1,
+        backgroundColor: theme.colors.background,
     },
-    containerView: { // New: A wrapping view for the content inside ScrollView
-        paddingBottom: theme.spacing.xxlarge, // Ensure space for the button at the very end
+    contentContainerStyle: { // For ScrollView's content container
+      flexGrow: 1,
+      padding: theme.spacing.medium,
+    },
+    formContainer: { // The View wrapping all form elements
+        paddingBottom: theme.spacing.xxlarge,
     },
     title: {
       fontSize: theme.fontSizes.headline,
@@ -131,46 +133,48 @@ const RiskPredictionScreen = () => {
       marginTop: theme.spacing.medium,
     },
     input: {
-      height: 50,
       backgroundColor: theme.colors.surface,
       borderColor: theme.colors.border,
       borderWidth: 1,
       borderRadius: theme.roundness,
       paddingHorizontal: theme.spacing.medium,
-      marginBottom: theme.spacing.small, // Reduced bottom margin for tighter packing
+      paddingVertical: theme.spacing.medium, // Consistent padding for height
       fontSize: theme.fontSizes.input,
       color: theme.colors.text,
-      paddingVertical: theme.spacing.small,
+      marginBottom: theme.spacing.medium, // Increased margin
     },
     errorText: {
       color: theme.colors.error,
       textAlign: 'center',
       marginBottom: theme.spacing.medium,
       fontSize: theme.fontSizes.body,
+      fontFamily: theme.fonts.regular,
     },
-    button: { // Copied from LoginScreen for consistency
+    button: {
       alignItems: 'center',
       justifyContent: 'center',
       paddingVertical: theme.spacing.medium,
       borderRadius: theme.roundness,
-      marginTop: theme.spacing.large, // More space before button
-      backgroundColor: theme.colors.primary,
+      marginTop: theme.spacing.large,
+      backgroundColor: theme.colors.primary, // Primary action color
       elevation: 2,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.2,
       shadowRadius: 1.5,
     },
-    buttonText: { // Copied from LoginScreen
+    buttonText: {
       color: theme.colors.lightText,
       fontSize: theme.fontSizes.button,
       fontFamily: theme.fonts.bold,
       fontWeight: 'bold',
       letterSpacing: 0.25,
     },
-    buttonContainer: { // Kept for consistency if needed, but Pressable is used directly
-      marginTop: theme.spacing.large,
-      marginBottom: theme.spacing.xlarge, // Ensure enough space at the bottom
+    // Removed buttonContainer as Pressable is styled directly
+    loadingIndicatorContainer: { // For centering ActivityIndicator
+        marginTop: theme.spacing.large,
+        marginBottom: theme.spacing.xlarge,
+        alignItems: 'center',
     }
   });
 
@@ -189,8 +193,8 @@ const RiskPredictionScreen = () => {
   );
 
   return (
-    <ScrollView style={{flex: 1, backgroundColor: theme.colors.background}} contentContainerStyle={styles.scrollViewContent}>
-      <View style={styles.containerView}>
+    <ScrollView style={styles.scrollViewStyle} contentContainerStyle={styles.contentContainerStyle}>
+      <View style={styles.formContainer}>
         <Text style={styles.title}>Criar Nova Simulação</Text>
 
         {error && <Text style={styles.errorText}>{error}</Text>}
@@ -218,21 +222,22 @@ const RiskPredictionScreen = () => {
 
         <FormField label="CPI (Índice de Corrupção)" value={inputCpi} onChangeText={setInputCpi} keyboardType="numeric" placeholder="Opcional, ex: 69.0" />
 
-        <View style={styles.buttonContainer}>
-          {isLoading ? (
+        {/* View for button container removed, Pressable styled directly or via styles.button */}
+        {isLoading ? (
+          <View style={styles.loadingIndicatorContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-          ) : (
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                { opacity: pressed ? 0.8 : 1 }
-              ]}
-              onPress={handleCreateSimulation}
-            >
-              <Text style={styles.buttonText}>Criar Simulação</Text>
-            </Pressable>
-          )}
-        </View>
+          </View>
+        ) : (
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              { opacity: pressed ? 0.8 : 1, marginTop: theme.spacing.xlarge, marginBottom: theme.spacing.xlarge } // Added more margin for the button
+            ]}
+            onPress={handleCreateSimulation}
+          >
+            <Text style={styles.buttonText}>Criar Simulação</Text>
+          </Pressable>
+        )}
       </View>
     </ScrollView>
   );

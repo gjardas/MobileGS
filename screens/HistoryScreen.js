@@ -1,27 +1,27 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, Button, RefreshControl, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Button, RefreshControl, Alert, Pressable } from 'react-native'; // Added Pressable
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme as useCentralTheme } from '../styles/theme';
 
-// Local theme definition
+// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
-    primary: '#2E8B57', secondary: '#4682B4', accent: '#FF6347',
-    background: '#F0F2F5', surface: '#FFFFFF', card: '#FFFFFF',
-    text: '#333333', textSecondary: '#555555', placeholder: '#999999',
-    lightText: '#FFFFFF', error: '#DC3545', success: '#28A745',
-    info: '#17A2B8', warning: '#FFC107', border: '#DDDDDD', disabled: '#CCCCCC',
+    primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
+    background: '#F4F6F8', surface: '#FFFFFF', card: '#FFFFFF',
+    text: '#212121', textSecondary: '#757575', placeholder: '#BDBDBD',
+    lightText: '#FFFFFF', error: '#D32F2F', success: '#388E3C',
+    info: '#1976D2', warning: '#FFA000', border: '#E0E0E0', disabled: '#BDBDBD',
   },
   fonts: { regular: 'System', bold: 'System', header: 'System' },
-  fontSizes: { caption: 12, button: 14, body: 16, input: 16, subheading: 18, title: 20, headline: 24, display1: 32 },
+  fontSizes: { caption: 12, button: 15, body: 16, input: 16, subheading: 18, title: 22, headline: 26 },
   spacing: { xxsmall: 2, xsmall: 4, small: 8, medium: 16, large: 24, xlarge: 32, xxlarge: 48 },
   roundness: 8,
 };
 
 const HistoryScreen = () => {
-  const theme = localTheme; // Prioritize localTheme
-  // const { colors, fonts } = useCentralTheme(); // Or merge if central theme is fixed
+  const theme = localTheme;
+  // const { colors, fonts } = useCentralTheme(); // Merge if needed
 
   const [historyEvents, setHistoryEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -60,20 +60,7 @@ const HistoryScreen = () => {
     fetchHistoryEvents(true);
   };
 
-  const renderHistoryItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Text style={styles.itemTitle}>
-        {item.eventName || 'Evento Desconhecido'} (ID: {item.disNo})
-      </Text>
-      <Text style={styles.itemDetailText}>Tipo: <Text style={styles.itemValueText}>{item.disasterType || 'N/A'}</Text></Text>
-      <Text style={styles.itemDetailText}>País: <Text style={styles.itemValueText}>{item.country || 'N/A'}</Text></Text>
-      <Text style={styles.itemDetailText}>Ano: <Text style={styles.itemValueText}>{item.yearEvent || 'N/A'}</Text></Text>
-      <Text style={styles.itemDetailText}>Data de Início: <Text style={styles.itemValueText}>{item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A'}</Text></Text>
-      <Text style={styles.itemDetailText}>Data de Fim: <Text style={styles.itemValueText}>{item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'}</Text></Text>
-    </View>
-  );
-
-  // Styles using localTheme
+  // Styles using the new localTheme
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -97,36 +84,40 @@ const HistoryScreen = () => {
       borderWidth: 1,
       borderColor: theme.colors.border,
       elevation: 2,
-      shadowColor: '#000',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.15,
-      shadowRadius: 2.0,
+      shadowOpacity: 0.10,
+      shadowRadius: 1.5,
     },
     itemTitle: {
       fontSize: theme.fontSizes.subheading,
       fontFamily: theme.fonts.bold,
+      fontWeight: 'bold',
       color: theme.colors.primary,
       marginBottom: theme.spacing.small,
-      fontWeight: 'bold',
     },
     itemDetailText: {
       fontSize: theme.fontSizes.body,
       fontFamily: theme.fonts.regular,
       color: theme.colors.textSecondary,
       marginBottom: theme.spacing.xsmall,
+      lineHeight: theme.fontSizes.body * 1.4,
     },
     itemValueText: {
         color: theme.colors.text,
+        fontFamily: theme.fonts.regular,
         fontWeight: '500',
     },
     errorText: {
       textAlign: 'center',
       marginBottom: theme.spacing.medium,
       fontSize: theme.fontSizes.body,
+      fontFamily: theme.fonts.regular,
       color: theme.colors.error,
     },
     emptyText: {
       fontSize: theme.fontSizes.body,
+      fontFamily: theme.fonts.regular,
       color: theme.colors.textSecondary,
       textAlign: 'center',
     },
@@ -134,8 +125,35 @@ const HistoryScreen = () => {
       color: theme.colors.text,
       marginTop: theme.spacing.small,
       fontSize: theme.fontSizes.body,
+      fontFamily: theme.fonts.regular,
+    },
+    retryButton: { // Style for the "Tentar Novamente" Pressable
+        backgroundColor: theme.colors.primary,
+        paddingVertical: theme.spacing.small,
+        paddingHorizontal: theme.spacing.medium,
+        borderRadius: theme.roundness,
+        elevation: 1,
+    },
+    retryButtonText: {
+        color: theme.colors.lightText,
+        fontSize: theme.fontSizes.button,
+        fontFamily: theme.fonts.bold,
+        fontWeight: 'bold',
     }
   });
+
+  const renderHistoryItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+      <Text style={styles.itemTitle}>
+        {item.eventName || 'Evento Desconhecido'} (ID: {item.disNo})
+      </Text>
+      <Text style={styles.itemDetailText}>Tipo: <Text style={styles.itemValueText}>{item.disasterType || 'N/A'}</Text></Text>
+      <Text style={styles.itemDetailText}>País: <Text style={styles.itemValueText}>{item.country || 'N/A'}</Text></Text>
+      <Text style={styles.itemDetailText}>Ano: <Text style={styles.itemValueText}>{item.yearEvent || 'N/A'}</Text></Text>
+      <Text style={styles.itemDetailText}>Data de Início: <Text style={styles.itemValueText}>{item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A'}</Text></Text>
+      <Text style={styles.itemDetailText}>Data de Fim: <Text style={styles.itemValueText}>{item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'}</Text></Text>
+    </View>
+  );
 
   if (isLoading && !refreshing) {
     return (
@@ -150,7 +168,9 @@ const HistoryScreen = () => {
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>{error}</Text>
-        <Button title="Tentar Novamente" onPress={() => fetchHistoryEvents()} color={theme.colors.primary} />
+        <Pressable style={({pressed}) => [styles.retryButton, {opacity: pressed ? 0.8 : 1}]} onPress={() => fetchHistoryEvents()}>
+            <Text style={styles.retryButtonText}>Tentar Novamente</Text>
+        </Pressable>
       </View>
     );
   }
@@ -160,7 +180,7 @@ const HistoryScreen = () => {
       <FlatList
         data={historyEvents}
         renderItem={renderHistoryItem}
-        keyExtractor={(item) => item.disNo.toString()} // Ensure key is a string
+        keyExtractor={(item) => item.disNo.toString()}
         ListEmptyComponent={
           <View style={styles.centered}>
             <Text style={styles.emptyText}>Nenhum evento histórico encontrado.</Text>

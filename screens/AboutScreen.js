@@ -1,9 +1,9 @@
 import React from 'react';
-import { ScrollView, View, Text, Button, StyleSheet, Pressable } from 'react-native';
-import { useTheme as useCentralTheme } from '../styles/theme'; 
+import { ScrollView, View, Text, Button, StyleSheet, Pressable } from 'react-native'; // Added Pressable
+import { useTheme as useCentralTheme } from '../styles/theme'; // Keep if central theme might be fixed later
 import Card from '../components/Cards';
 
-
+// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -19,16 +19,21 @@ const localTheme = {
 };
 
 const AboutScreen = ({ navigation }) => {
-  const theme = localTheme;
+  const theme = localTheme; // Prioritize localTheme
+  // const centralTheme = useCentralTheme(); // Merge if needed: const theme = { ...centralTheme, ...localTheme };
+
   const styles = StyleSheet.create({
-    scrollViewContainer: {
+    scrollViewContainer: { // This is for contentContainerStyle
       flexGrow: 1,
-      backgroundColor: theme.colors.background,
-    },
-    container: {
-      flex: 1,
+      // backgroundColor is not needed here if ScrollView has it.
+      // padding can be here or on the inner View.
       padding: theme.spacing.medium,
-      alignItems: 'center',
+      alignItems: 'center', // If you want content centered in the scrollable area
+    },
+    container: { // This is the View directly inside the ScrollView's content area
+      // flex: 1, // Remove this, let content define height
+      width: '100%', // Ensure it takes width for alignItems to work
+      alignItems: 'center', // Keep if you want cards centered
     },
     mainTitle: {
       fontSize: theme.fontSizes.headline,
@@ -40,11 +45,11 @@ const AboutScreen = ({ navigation }) => {
     },
     cardStyle: {
       width: '95%',
-      backgroundColor: theme.colors.card,
-      borderRadius: theme.roundness,  
+      backgroundColor: theme.colors.card, // Use theme card color
+      borderRadius: theme.roundness,    // Use theme roundness
       marginBottom: theme.spacing.medium,
       padding: theme.spacing.medium,
-      elevation: 2,  
+      elevation: 2,                   // Standard elevation for cards
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.18,
@@ -54,23 +59,23 @@ const AboutScreen = ({ navigation }) => {
       fontSize: theme.fontSizes.title,
       fontWeight: 'bold',
       fontFamily: theme.fonts.header,
-      marginBottom: theme.spacing.medium, 
+      marginBottom: theme.spacing.medium, // Increased margin
       color: theme.colors.primary,
     },
     cardText: {
       fontSize: theme.fontSizes.body,
       fontFamily: theme.fonts.regular,
-      lineHeight: theme.fontSizes.body * 1.5, 
+      lineHeight: theme.fontSizes.body * 1.5, // Improved line height
       marginBottom: theme.spacing.small,
       color: theme.colors.text,
     },
     boldText: {
       fontWeight: 'bold',
       fontFamily: theme.fonts.bold,
-      color: theme.colors.text,
+      color: theme.colors.text, // Ensure bold text also uses theme color
     },
-    buttonContainer: { 
-      marginTop: theme.spacing.large, 
+    buttonContainer: { // For the Pressable button
+      marginTop: theme.spacing.large, // More space before button
       width: '80%',
     },
     pressableButton: {
@@ -91,9 +96,16 @@ const AboutScreen = ({ navigation }) => {
   });
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContainer} style={{backgroundColor: theme.colors.background}}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: theme.colors.background }} // Added flex: 1 here
+      contentContainerStyle={styles.scrollViewContainer}
+    >
       <View style={styles.container}>
         <Text style={styles.mainTitle}>Sobre o SAR-Drone</Text>
+
+        {/* Assuming Card component from '../components/Cards' can accept style prop
+            and will merge it or use it appropriately. If Card has its own fixed styling,
+            these style props might be partially or fully ignored. */}
         <Card style={styles.cardStyle}>
           <Text style={styles.cardTitle}>Visão Geral</Text>
           <Text style={styles.cardText}>

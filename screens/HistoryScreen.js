@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, Button, RefreshControl, Alert, Pressable } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Button, RefreshControl, Alert, Pressable } from 'react-native'; // Added Pressable
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme as useCentralTheme } from '../styles/theme';
 
-
+// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -21,6 +21,8 @@ const localTheme = {
 
 const HistoryScreen = () => {
   const theme = localTheme;
+  // const { colors, fonts } = useCentralTheme(); // Merge if needed
+
   const [historyEvents, setHistoryEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,7 +60,7 @@ const HistoryScreen = () => {
     fetchHistoryEvents(true);
   };
 
-
+  // Styles using the new localTheme
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -66,6 +68,7 @@ const HistoryScreen = () => {
     },
     listContentContainer: {
       padding: theme.spacing.medium,
+      flexGrow: 1, // Ensure content container can grow
     },
     centered: {
       flex: 1,
@@ -125,7 +128,7 @@ const HistoryScreen = () => {
       fontSize: theme.fontSizes.body,
       fontFamily: theme.fonts.regular,
     },
-    retryButton: {
+    retryButton: { // Style for the "Tentar Novamente" Pressable
         backgroundColor: theme.colors.primary,
         paddingVertical: theme.spacing.small,
         paddingHorizontal: theme.spacing.medium,

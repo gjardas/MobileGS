@@ -36,7 +36,7 @@ O objetivo do MobileGS é fornecer uma ferramenta intuitiva para planejamento, a
     *   Node.js e npm/yarn instalados.
     *   Expo CLI instalado globalmente (`npm install -g expo-cli`).
     *   Um emulador Android/iOS configurado ou um dispositivo físico com o app Expo Go.
-    *   **API Java (GlobalSight API) em execução:** O backend Java correspondente a este projeto mobile precisa estar rodando e acessível na URL configurada no aplicativo (atualmente `http://localhost:8080` em `services/api.js`). A API Java também deve estar conectada ao seu próprio banco de dados.
+    *   **API Java (GlobalSight API) em execução:** O backend Java correspondente a este projeto mobile precisa estar rodando e acessível na URL configurada no aplicativo (atualmente `http://localhost:8081` em `services/api.js`). A API Java também deve estar conectada ao seu próprio banco de dados.
 
 2.  **Instalação de Dependências:**
     ```bash
@@ -55,3 +55,8 @@ O objetivo do MobileGS é fornecer uma ferramenta intuitiva para planejamento, a
 
 ## Vídeo de Demonstração no YouTube
 
+[ASSISTIR VÍDEO AQUI - Adicionar o link do YouTube]
+
+---
+
+*Este README foi gerado e adicionado por Jules, um agente de engenharia de software.*

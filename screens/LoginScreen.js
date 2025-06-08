@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, ActivityIndicator, Pressable } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { useTheme as useCentralTheme } from '../styles/theme'; // Kept for potential future use
+import { useTheme as useCentralTheme } from '../styles/theme';
 
-// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -20,7 +19,6 @@ const localTheme = {
 
 const LoginScreen = ({ navigation }) => {
   const theme = localTheme;
-  // const centralThemeHook = useCentralTheme(); // Merge if needed
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -35,16 +33,14 @@ const LoginScreen = ({ navigation }) => {
     }
     setError('');
     setIsSubmitting(true);
-    console.log('[LoginScreen] Chamando authContext.login...'); // DEBUG
+    console.log('[LoginScreen] Chamando authContext.login...');
     try {
-      const response = await login(username, password); // Capture response if needed for logging
-      console.log('[LoginScreen] Resposta do authContext.login:', response); // DEBUG
-      // Navigation to main app stack is handled by App.js logic based on userToken update
+      const response = await login(username, password); 
+      console.log('[LoginScreen] Resposta do authContext.login:', response);
     } catch (err) {
-      console.error('[LoginScreen] Erro ao tentar logar:', err.message); // DEBUG
+      console.error('[LoginScreen] Erro ao tentar logar:', err.message);
       if (err.message === 'UNAUTHORIZED_OR_EXPIRED_TOKEN') {
          setError("Sessão expirada ou credenciais inválidas.");
-         // AuthContext should handle the actual logout if this error is from there
       } else if (err.message && err.message.includes('Falha no login: Dados essenciais ausentes na resposta')) {
         setError('Falha no login: Dados essenciais ausentes. Tente novamente ou contate o suporte.');
       }
@@ -56,7 +52,6 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  // Styles using the new localTheme
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -66,7 +61,7 @@ const LoginScreen = ({ navigation }) => {
     },
     title: {
       fontSize: theme.fontSizes.headline,
-      fontFamily: theme.fonts.header, // Assuming system bold for header if Inter not loaded
+      fontFamily: theme.fonts.header,
       fontWeight: 'bold',
       color: theme.colors.primary,
       textAlign: 'center',
@@ -77,7 +72,7 @@ const LoginScreen = ({ navigation }) => {
       fontFamily: theme.fonts.regular,
       color: theme.colors.textSecondary,
       marginBottom: theme.spacing.xsmall,
-      // marginLeft: theme.spacing.xxsmall, // Optional: if labels need to be slightly offset
+     
     },
     input: {
       backgroundColor: theme.colors.surface,
@@ -85,7 +80,7 @@ const LoginScreen = ({ navigation }) => {
       borderWidth: 1,
       borderRadius: theme.roundness,
       paddingHorizontal: theme.spacing.medium,
-      paddingVertical: theme.spacing.medium, // Adjusted for a common height around 48-50
+      paddingVertical: theme.spacing.medium, 
       fontSize: theme.fontSizes.input,
       color: theme.colors.text,
       marginBottom: theme.spacing.medium,
@@ -103,7 +98,7 @@ const LoginScreen = ({ navigation }) => {
       paddingVertical: theme.spacing.medium,
       borderRadius: theme.roundness,
       marginTop: theme.spacing.medium,
-      backgroundColor: theme.colors.primary, // Default to primary
+      backgroundColor: theme.colors.primary, 
       elevation: 2,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
@@ -113,7 +108,7 @@ const LoginScreen = ({ navigation }) => {
     buttonText: {
       color: theme.colors.lightText,
       fontSize: theme.fontSizes.button,
-      fontFamily: theme.fonts.bold, // Use bold font for button text
+      fontFamily: theme.fonts.bold,
       fontWeight: 'bold',
       letterSpacing: 0.25,
     },
@@ -122,10 +117,10 @@ const LoginScreen = ({ navigation }) => {
       alignItems: 'center',
     },
     linkText: {
-      color: theme.colors.primary, // Links use primary color
+      color: theme.colors.primary, 
       fontSize: theme.fontSizes.body,
       fontFamily: theme.fonts.regular,
-      textDecorationLine: 'underline', // Standard link appearance
+      textDecorationLine: 'underline',
     }
   });
 

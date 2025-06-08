@@ -1,5 +1,5 @@
 import React from 'react';
-import AppButton from './AppButton'; // Importa AppButton para o botão "OK"
+import AppButton from './AppButton';
 import { useTheme } from '../styles/theme';
 
 const CustomAlert = ({ visible, message, onClose, type = 'info' }) => {

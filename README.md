@@ -1,22 +1,21 @@
-# MobileGS - Aplicativo de Gerenciamento e Simulação de Desastres Naturais
+# SAR-Drone - Aplicativo de Gerenciamento e Simulação de Desastres Naturais
 
-## Autores
+## Integrantes
 
 - Guilherme Ferreira Jardim - RM556814
 - Fernando Fontes - RM555317
 
 ## Descrição do Projeto
 
-O MobileGS é um aplicativo móvel desenvolvido em React Native com Expo, projetado para auxiliar no gerenciamento e na simulação de respostas a desastres naturais. Ele se integra a uma API backend Java (GlobalSight API) para fornecer funcionalidades robustas, incluindo:
+SAR-Drone: Conectividade Aérea para Salvar Vidas em Desastres
+O SAR-Drone é uma solução integrada e inovadora que visa revolucionar a resposta a desastres naturais no Brasil. Ele atua como a primeira linha de apoio em emergências, combatendo a lacuna crítica de comunicação em áreas isoladas ou já afetadas.
 
-- **Autenticação de Usuários:** Sistema seguro de registro e login com persistência de sessão usando tokens JWT.
-- **Visualização de Histórico de Desastres:** Permite aos usuários consultar um banco de dados de eventos de desastres naturais que ocorreram anteriormente, visualizando detalhes como tipo, local, data e magnitude.
-- **Criação de Simulações de Desastres:** Usuários podem criar cenários de simulação de desastres, inserindo diversos parâmetros como tipo de desastre, localização geográfica (latitude/longitude), datas, magnitude, entre outros.
-- **Monitoramento de Simulações:** As simulações criadas pelos usuários são listadas, permitindo o acompanhamento de seu status (ex: status de processamento por IA).
-- **Simulação de Despacho de Drones:** Para uma simulação selecionada, o sistema pode simular o despacho de drones, fornecendo informações como número de drones enviados, área de cobertura estimada e notas da missão. Esta funcionalidade depende do processamento prévio da simulação por um serviço de IA (através da API Java).
-- **Interface de Usuário Moderna:** O aplicativo possui uma interface de usuário estilizada, inspirada em designs modernos, visando a clareza e facilidade de uso.
+O sistema funciona em três fases:
 
-O objetivo do MobileGS é fornecer uma ferramenta intuitiva para planejamento, análise e resposta a situações de emergência, facilitando o acesso a informações cruciais e a simulação de cenários de desastre.
+- Previsão Inteligente e Acionamento: Usamos um modelo preditivo que analisa dados históricos e geográficos para estimar o número de mortes em caso de desastre. Com base nesse risco, um drone SAR-Drone é automaticamente enviado ao local.
+- Estabelecimento de Conectividade Local: Chegando à área, o SAR-Drone se torna um hub de comunicação aérea, oferecendo Wi-Fi gratuito de emergência. Isso permite que as pessoas se conectem, peçam ajuda e avisem suas famílias.
+- Disseminação de Informações Críticas: O drone também transmite via rádio informações vitais, como notícias oficiais, alertas e localização de abrigos/rotas de fuga, garantindo que todos, mesmo sem smartphones, recebam as orientações necessárias.
+O aplicativo móvel SAR-Drone complementa a operação, funcionando como uma plataforma de gerenciamento e simulação para agências de resposta. Ele permite autenticação, visualização de históricos de desastres, criação e monitoramento de simulações, e simulação de despacho de drones, tudo integrado a uma API Java.
 
 ## Funcionalidades Implementadas
 
@@ -36,7 +35,7 @@ O objetivo do MobileGS é fornecer uma ferramenta intuitiva para planejamento, a
     *   Node.js e npm/yarn instalados.
     *   Expo CLI instalado globalmente (`npm install -g expo-cli`).
     *   Um emulador Android/iOS configurado ou um dispositivo físico com o app Expo Go.
-    *   **API Java (GlobalSight API) em execução:** O backend Java correspondente a este projeto mobile precisa estar rodando e acessível na URL configurada no aplicativo (atualmente `http://localhost:8081` em `services/api.js`). A API Java também deve estar conectada ao seu próprio banco de dados.
+    *   **API Java (GlobalSight API) em execução:** O backend Java correspondente a este projeto mobile precisa estar rodando e acessível na URL configurada no aplicativo (atualmente `http://localhost:8080` em `services/api.js`). A API Java também deve estar conectada ao seu próprio banco de dados.
 
 2.  **Instalação de Dependências:**
     ```bash
@@ -55,8 +54,4 @@ O objetivo do MobileGS é fornecer uma ferramenta intuitiva para planejamento, a
 
 ## Vídeo de Demonstração no YouTube
 
-[ASSISTIR VÍDEO AQUI - Adicionar o link do YouTube]
-
----
-
-*Este README foi gerado e adicionado por Jules, um agente de engenharia de software.*
+https://www.youtube.com/watch?v=D_wb2PFosZc

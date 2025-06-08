@@ -1,38 +1,26 @@
-// App.js
-// Ponto de entrada principal do aplicativo MobileGS.
-// Configura os provedores globais (Tema, Autenticação) e o roteador de navegação principal.
 import React from 'react';
 import { ActivityIndicator, View, StyleSheet, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
-
-// Import existing screens for the main app part
-import { ThemeProvider } from './styles/theme'; // Assuming this is still needed
+import { ThemeProvider } from './styles/theme';
 import HomeScreen from './screens/HomeScreen';
 import RiskPredictionScreen from './screens/RiskPredictionScreen';
 import DroneControlScreen from './screens/DroneControlScreen';
 import AlertsScreen from './screens/AlertsScreen';
 import AboutScreen from './screens/AboutScreen';
-import HistoryScreen from './screens/HistoryScreen'; // Import HistoryScreen
+import HistoryScreen from './screens/HistoryScreen';
 
 const Stack = createStackNavigator();
 
-// A simple placeholder for the main app navigation after login
-// This can be expanded into a tab navigator or a more complex stack navigator
 const MainAppStack = createStackNavigator();
 
 function MainNavigator() {
-  // For simplicity, starting with HomeScreen.
-  // The original navigation logic (navigate, renderPage) can be integrated here
-  // using react-navigation patterns if needed, or replaced by stack/tab navigators.
   return (
     <MainAppStack.Navigator>
       <MainAppStack.Screen name="HomeApp" component={HomeScreen} options={{ title: 'Dashboard Principal' }}/>
-      {/* Add other main app screens here as needed, e.g. */}
       <MainAppStack.Screen name="RiskPrediction" component={RiskPredictionScreen} options={{ title: 'Criar Simulação' }} />
       <MainAppStack.Screen name="DroneControl" component={DroneControlScreen} options={{ title: 'Controle de Drones' }} />
       <MainAppStack.Screen name="Alerts" component={AlertsScreen} options={{ title: 'Minhas Simulações' }} />
@@ -51,13 +39,9 @@ function AuthNavigator() {
   );
 }
 
-/**
- * Componente raiz de navegação que decide qual stack de navegação (Autenticação ou Principal)
- * deve ser renderizado com base no estado de autenticação do usuário.
- */
 function AppRootNavigator() {
   const { userToken, isLoading } = useAuth();
-  console.log('[App.js] AppRootNavigator: isLoading:', isLoading, 'userToken:', userToken); // DEBUG
+  console.log('[App.js] AppRootNavigator: isLoading:', isLoading, 'userToken:', userToken);
 
   if (isLoading) {
     return (
@@ -78,12 +62,7 @@ function AppRootNavigator() {
 const App = () => {
   return (
     <AuthProvider>
-      <ThemeProvider> {/* ThemeProvider should ideally inject styles in a RN-compatible way */}
-        {/* The <style> tag with global CSS has been removed.
-            Global font imports like Inter should be handled via Expo Font or custom font loading.
-            CSS animations would need to be replaced with React Native's Animated API or libraries like Lottie/Reanimated.
-            Basic body styles (margin, font-family) are typically handled by default text components or global styles set on root views.
-         */}
+      <ThemeProvider>
         <AppRootNavigator />
       </ThemeProvider>
     </AuthProvider>

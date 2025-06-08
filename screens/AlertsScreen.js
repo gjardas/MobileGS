@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme as useCentralTheme } from '../styles/theme';
 import { useNavigation } from '@react-navigation/native';
 
-// EOSDA-inspired local theme definition
 const localTheme = {
   colors: {
     primary: '#0A4A7A', secondary: '#5DADE2', accent: '#F5A623',
@@ -22,7 +21,6 @@ const localTheme = {
 
 const AlertsScreen = () => {
   const theme = localTheme;
-  // const centralThemeHook = useCentralTheme(); // Merge if needed
 
   const [simulations, setSimulations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +60,6 @@ const AlertsScreen = () => {
     fetchSimulations(true);
   };
 
-  // Styles using the new localTheme
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -70,9 +67,9 @@ const AlertsScreen = () => {
     },
     listContentContainer: {
       padding: theme.spacing.medium,
-      flexGrow: 1, // Ensure content container can grow, useful for centering empty/loading states if list itself is flexed
+      flexGrow: 1,
     },
-    centered: { // For loading, error, and empty states
+    centered: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
@@ -89,14 +86,14 @@ const AlertsScreen = () => {
       elevation: 2,
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.10, // Softer shadow
+      shadowOpacity: 0.10, 
       shadowRadius: 1.5,
     },
     itemTitle: {
       fontSize: theme.fontSizes.subheading,
       fontFamily: theme.fonts.bold,
       fontWeight: 'bold',
-      color: theme.colors.primary, // Use primary color for titles
+      color: theme.colors.primary,
       marginBottom: theme.spacing.small,
     },
     itemDetailText: {
@@ -108,7 +105,7 @@ const AlertsScreen = () => {
     },
     itemValueText: {
         color: theme.colors.text,
-        fontFamily: theme.fonts.regular, // Can be bold if needed: theme.fonts.bold
+        fontFamily: theme.fonts.regular, 
         fontWeight: '500',
     },
     dispatchButton: {
@@ -116,13 +113,13 @@ const AlertsScreen = () => {
       paddingVertical: theme.spacing.small,
       paddingHorizontal: theme.spacing.medium,
       borderRadius: theme.roundness,
-      backgroundColor: theme.colors.accent, // Use accent color for this action
+      backgroundColor: theme.colors.accent,
       alignItems: 'center',
       justifyContent: 'center',
       elevation: 1,
     },
     dispatchButtonText: {
-      color: theme.colors.lightText, // Assuming accent color has dark background
+      color: theme.colors.lightText,
       fontSize: theme.fontSizes.button,
       fontFamily: theme.fonts.bold,
       fontWeight: 'bold',
@@ -146,7 +143,7 @@ const AlertsScreen = () => {
       fontSize: theme.fontSizes.body,
       fontFamily: theme.fonts.regular,
     },
-    retryButton: { // Style for the "Tentar Novamente" Pressable
+    retryButton: {
         backgroundColor: theme.colors.primary,
         paddingVertical: theme.spacing.small,
         paddingHorizontal: theme.spacing.medium,
